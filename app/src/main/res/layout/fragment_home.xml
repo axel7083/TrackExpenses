@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:overScrollMode="never">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/empty_warning"
+            android:visibility="gone"
+            android:text="You have not made any expense this week yet."
+            android:textSize="20dp"
+            android:paddingTop="20dp"
+            android:textColor="@color/grey"
+            android:gravity="center"
+            android:layout_marginHorizontal="@dimen/side_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!--<Button
+            android:text="add"
+            android:id="@+id/add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:text="list"
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>-->
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/card_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="25dp"
+            app:cardBackgroundColor="@android:color/white"
+            android:layout_marginBottom="20dp"
+            app:cardElevation="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/side_margin"
+                android:orientation="vertical">
+
+                <TextView
+                    android:text="This week"
+                    android:layout_marginTop="15dp"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/arsenic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <ProgressBar
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/now_progress"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="20dp"
+                    android:progressTint="@color/purple"
+                    android:progressDrawable="@drawable/progress_bar"/>
+
+
+                <LinearLayout
+                    android:layout_marginVertical="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <!-- Left side -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardBackgroundColor="@color/purple"
+                            app:cardElevation="0dp"
+                            app:cardCornerRadius="15dp">
+                            <TextView
+                                android:gravity="center"
+                                android:textColor="@color/white"
+                                android:textSize="25dp"
+                                android:textStyle="bold"
+                                android:text="-"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"/>
+                        </androidx.cardview.widget.CardView>
+
+                        <LinearLayout
+                            android:layout_marginStart="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:textColor="@color/grey"
+                                android:layout_height="wrap_content"
+                                android:text="Expense"/>
+
+                            <TextView
+                                android:id="@+id/expense_home"
+                                android:layout_width="match_parent"
+                                android:textColor="@color/arsenic"
+                                android:layout_height="wrap_content"
+                                android:text="$ 84,50"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <!-- Right side -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardBackgroundColor="@color/yellow"
+                            app:cardElevation="0dp"
+                            app:cardCornerRadius="15dp">
+                            <TextView
+                                android:gravity="center"
+                                android:textColor="@color/white"
+                                android:textSize="25dp"
+                                android:textStyle="bold"
+                                android:text="+"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"/>
+                        </androidx.cardview.widget.CardView>
+
+                        <LinearLayout
+                            android:layout_marginStart="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:textColor="@color/grey"
+                                android:layout_height="wrap_content"
+                                android:text="Remaining"/>
+
+                            <TextView
+                                android:id="@+id/remaining"
+                                android:layout_width="match_parent"
+                                android:textColor="@color/arsenic"
+                                android:layout_height="wrap_content"
+                                android:text="$ 20,41"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginHorizontal="15dp"
+            android:id="@+id/current_week_expenses"
+            android:nestedScrollingEnabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+
+</androidx.core.widget.NestedScrollView>

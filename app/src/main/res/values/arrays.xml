@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories_name">
+        <item>Grocery</item>
+        <item>Drink</item>
+        <item>Transport</item>
+        <item>Activity</item>
+        <item>School</item>
+    </string-array>
+    <string-array name="categories_smiley">
+        <item>🛍️</item>
+        <item>🍺️</item>
+        <item>🚌️</item>
+        <item>⚽</item>
+        <item>🏫</item>
+    </string-array>
+    
+</resources>

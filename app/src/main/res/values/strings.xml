@@ -1,0 +1,12 @@
+<resources>
+    <string name="back_alert">Press back one more time to exit the application.</string>
+    <string name="app_name">TrackExpenses</string>
+    <string name="main_title">Home</string>
+    <string name="expense_title">Add Expense</string>
+    <string name="cancel">Cancel</string>
+    <string name="start">Start</string>
+    <string name="save">Save</string>
+    <string name="expense_edit">Edit an expense</string>
+    <string name="next">Next</string>
+    <string name="get_started">Get Started</string>
+</resources>
