@@ -283,14 +283,20 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
         this.category = (category)
     }
 
-    override fun selectCategory(position: Int) {
+    override fun selectCategory(ID: String) {
         Log.d(TAG, "selectCategory")
-        category = categories[position]
+
+        for(i in 0 until categories.size) {
+            if(categories[i].ID.equals(ID)) {
+                category = categories[i]
+                break
+            }
+        }
 
         category_display.text = category.name
         category_display_smiley.setText(category.smiley)
 
-        expense.Category = categories[position].ID.toLong()
+        expense.Category = category.ID.toLong()
     }
 
 }

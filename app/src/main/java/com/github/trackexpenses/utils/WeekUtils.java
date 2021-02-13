@@ -7,8 +7,6 @@ import androidx.annotation.Nullable;
 import com.github.trackexpenses.models.Settings;
 import com.github.trackexpenses.models.Week;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,7 +48,7 @@ public class WeekUtils {
             }
             String str = formatSimple(instant,"Europe/Paris");
             Log.d(TAG,"missing => " + str);
-            weeks.add(new Week(-1.0,str,-1.0));
+            weeks.add(new Week(null, -1.0,str,-1.0));
             buffer.add(Calendar.DAY_OF_YEAR,7);
             weekCount++;
 
@@ -73,6 +71,7 @@ public class WeekUtils {
         }
         return null;
     }
+
 
     public static long getWeekLeft(String end) {
         long left = 0;

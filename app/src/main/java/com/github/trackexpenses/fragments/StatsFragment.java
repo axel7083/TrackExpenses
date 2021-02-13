@@ -20,25 +20,17 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.trackexpenses.R;
 import com.github.trackexpenses.activities.MainActivity;
 import com.github.trackexpenses.adapters.WeekAdapter;
 import com.github.trackexpenses.models.Category;
-import com.github.trackexpenses.models.Expense;
-import com.github.trackexpenses.models.Week;
 import com.github.trackexpenses.utils.CategoryUtils;
 import com.github.trackexpenses.utils.CustomBarChartRender;
-import com.github.trackexpenses.utils.ExpenseUtils;
-import com.github.trackexpenses.utils.WeekUtils;
 import com.google.gson.Gson;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-
-import static com.github.trackexpenses.utils.ExpenseUtils.computeWeekAllowance;
-import static com.github.trackexpenses.utils.WeekUtils.getWeekLeft;
 
 
 public class StatsFragment extends Fragment implements WeekAdapter.ItemClickListener {
@@ -134,11 +126,9 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
 
-        Pair<Double,Double> allowance = computeWeekAllowance(((MainActivity) getActivity()).weeks,((MainActivity) getActivity()).getSettings());
 
-        total_remaining.setText("$" + df.format(allowance.first));
-        next_allowance.setText("$" + df.format(allowance.second));
-
+        total_remaining.setText("$" + df.format(((MainActivity) getActivity()).allowance.component1()));
+        next_allowance.setText("$" + df.format(((MainActivity) getActivity()).allowance.component2()));
     }
 
     private void setupRV() {
@@ -210,6 +200,7 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
         xAxis.setTextSize(20);
         xAxis.setGranularity(1f);
         xAxis.setGranularityEnabled(true);
+
 
         //xAxis.setAxisMinimum(-1);
         //xAxis.setAxisMaximum(7);

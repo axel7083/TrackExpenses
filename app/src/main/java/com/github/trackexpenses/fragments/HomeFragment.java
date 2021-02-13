@@ -162,16 +162,16 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
         expense_home.setText("$ " + df.format(now.getSpent()));
         remaining.setText("$ " + df.format(now.getGoal()-now.getSpent()));
 
-        now_progress.setMax((int) now.getGoal());
-
         if(now.getSpent() < now.getGoal())
         {
+            now_progress.setMax((int) now.getGoal());
             now_progress.setProgress((int) now.getSpent());
             now_progress.setProgressTintList(ColorStateList.valueOf(getContext().getColor(R.color.purple)));
         }
         else
         {
-            now_progress.setProgress((int)  now.getGoal());
+            now_progress.setMax(100);
+            now_progress.setProgress(100);
             now_progress.setProgressTintList(ColorStateList.valueOf(getContext().getColor(R.color.red)));
         }
     }

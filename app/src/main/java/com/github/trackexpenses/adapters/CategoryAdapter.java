@@ -68,7 +68,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view,getAdapterPosition());
+            if (mClickListener != null) mClickListener.onItemClick(view,mData.get(getAdapterPosition()).getID());
         }
     }
 
@@ -79,7 +79,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(View view, String ID);
     }
 
     public interface Callback {

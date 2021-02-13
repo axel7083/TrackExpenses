@@ -149,22 +149,23 @@ public class CategoriesDialog extends Dialog implements
     }
 
     @Override
-    public void onItemClick(View view, int position) {
-        Log.d(TAG,"onItemClick position " + position);
+    public void onItemClick(View view, String ID) {
+        Log.d(TAG,"onItemClick ID " + ID);
 
         if(newCat != null) {
             Toast.makeText(getContext(),dialog_text.getText() + " added.",Toast.LENGTH_SHORT).show();
             newCat.setName(dialog_text.getText().toString());
             callback.addCategory(newCat);
         }
-        else
-            callback.selectCategory(position);
+        else {
+            callback.selectCategory(ID);
+        }
 
         dismiss();
     }
 
     public interface Callback {
             void addCategory(Category category);
-            void selectCategory(int position);
+            void selectCategory(String ID);
     }
 }

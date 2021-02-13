@@ -15,6 +15,9 @@ import com.github.trackexpenses.models.Category
 import com.github.trackexpenses.models.Expense
 import com.github.trackexpenses.models.Settings
 import com.github.trackexpenses.models.Week
+import com.github.trackexpenses.utils.ExpenseUtils
+import com.github.trackexpenses.utils.ExpenseUtils.computeNowWeekAllowance
+import com.github.trackexpenses.utils.TimeUtils
 import com.github.trackexpenses.utils.WeekUtils
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,9 +25,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-    lateinit var weeks: ArrayList<Week>
+
+    // SQLite Database
     lateinit var db: DatabaseHelper
+
+    // Share preference data
     lateinit var settings: Settings
+
+    // Data extracted from DB
+    lateinit var weeks: ArrayList<Week>
+    lateinit var allowance: Pair<Double, Double>
 
     private lateinit var homeFragment: HomeFragment
     private lateinit var statsFragment: StatsFragment
@@ -57,14 +67,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setup() {
-        getWeeks()
+        getDataFromDB()
         setupViews()
         createFragments()
         switchFragment(false)
     }
 
-    private fun getWeeks() {
+    private fun getDataFromDB() {
         weeks = db.weeks
+        allowance = ExpenseUtils.computeNextWeekAllowance(
+            weeks,
+            settings
+        )
+
     }
 
     private fun fetchData(): Boolean {
@@ -130,7 +145,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.stats -> switchFragment(true)
             R.id.plus_main -> openExpense()
             R.id.alertAction -> {
-                db.addWeek(Week(50.0, "2021-02-08", -1.0))
+                //db.addWeek(Week(cursor.getString(0), 50.0, "2021-02-08", -1.0))
             }
             else -> Log.d(TAG, "Something unknown clicked (" + p0.id + ")")
         }
@@ -237,9 +252,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             if(expense.ID == null) {
 
-                //Check
-                if(WeekUtils.getNow(weeks).spent == 0.0) {
-                    Log.d(TAG,"First expense of the week. Setup goal:")
+                //If nothing set for the current week
+                if(WeekUtils.getNow(weeks) == null) {
+                    Log.d(TAG, "First expense of the week. Setup goal:")
+                    val currentMonday = TimeUtils.formatSimple(TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(),"Europe/Paris")
+                    val nowAllowance = computeNowWeekAllowance(weeks,settings)
+                    Log.d(TAG, "currentMonday: $currentMonday nowAllowance: $nowAllowance")
+
+                    db.updateWeek(currentMonday,nowAllowance)
                 }
 
                 db.addExpense(expense)
@@ -249,7 +269,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 db.updateExpense(expense)
             }
         }
-        getWeeks()
+        getDataFromDB()
         homeFragment.refresh()
         statsFragment.refresh()
     }

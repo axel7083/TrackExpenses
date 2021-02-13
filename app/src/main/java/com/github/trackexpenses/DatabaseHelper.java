@@ -179,7 +179,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 if(cursor.getString(0) != null)
-                    arrayList.add(new Week(cursor.getDouble(1), cursor.getString(2), cursor.getDouble(3) ));
+                    arrayList.add(new Week(cursor.getString(0), cursor.getDouble(1), cursor.getString(2), cursor.getDouble(3) ));
             }while (cursor.moveToNext());
         }
         cursor.close();
@@ -238,6 +238,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //deleting row
         sqLiteDatabase.delete(TABLE_CATEGORY, "ID=" + ID, null);
         sqLiteDatabase.close();
+    }
+
+    //update a week
+    public void updateWeek(Week week) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        //updating row
+        sqLiteDatabase.update(TABLE_EXPENSE, extractValuesWeek(week), "ID=" + week.getID(), null);
+        sqLiteDatabase.close();
+    }
+
+    public void updateWeek(String date, double goal) {
+        SQLiteDatabase db = this .getWritableDatabase();
+        db.rawQuery("UPDATE " + TABLE_WEEK + " SET Goal = " + goal + " WHERE Date='" + date + "'"  , null);
+        db.close();
     }
 
     //update the expense
