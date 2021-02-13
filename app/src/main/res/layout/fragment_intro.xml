@@ -39,7 +39,7 @@
       android:layout_height="wrap_content"
       android:layout_marginTop="8dp"
       android:textAlignment="center"
-      android:text="This app allow you to track your expense\n for a defined period of time"
+      android:text="@string/intro_str"
       android:textColor="@color/white"
       android:textSize="18sp"
       app:layout_constraintEnd_toEndOf="parent"

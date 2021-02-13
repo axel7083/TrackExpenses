@@ -6,6 +6,7 @@
         <item>Transport</item>
         <item>Activity</item>
         <item>School</item>
+        <item>Gift for Axel</item>
     </string-array>
     <string-array name="categories_smiley">
         <item>🛍️</item>
@@ -13,6 +14,35 @@
         <item>🚌️</item>
         <item>⚽</item>
         <item>🏫</item>
+        <item>🎁</item>
     </string-array>
-    
+
+
+
+
+    <!-- Reply Preference -->
+    <string-array name="reply_entries">
+        <item>Reply</item>
+        <item>Reply to all</item>
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>reply</item>
+        <item>reply_all</item>
+    </string-array>
+
+
+    <!-- Currency Preference -->
+    <string-array name="currency_entries">
+        <item>Euro €</item>
+        <item>Dollar $</item>
+        <item>Mark KM</item>
+    </string-array>
+
+    <string-array name="currency_values">
+        <item>euro</item>
+        <item>dollar</item>
+        <item>mark</item>
+    </string-array>
+
 </resources>

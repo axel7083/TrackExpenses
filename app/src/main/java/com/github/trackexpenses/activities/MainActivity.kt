@@ -18,6 +18,8 @@ import com.github.trackexpenses.models.Week
 import com.github.trackexpenses.utils.ExpenseUtils
 import com.github.trackexpenses.utils.ExpenseUtils.computeNowWeekAllowance
 import com.github.trackexpenses.utils.TimeUtils
+import com.github.trackexpenses.utils.TimeUtils.isEnded
+import com.github.trackexpenses.utils.TimeUtils.isStarted
 import com.github.trackexpenses.utils.WeekUtils
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
@@ -36,6 +38,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var weeks: ArrayList<Week>
     lateinit var allowance: Pair<Double, Double>
 
+    // Important data
+    lateinit var currency: String
+
     private lateinit var homeFragment: HomeFragment
     private lateinit var statsFragment: StatsFragment
 
@@ -48,6 +53,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             db.loadDefault(this)
 
         if(!fetchData()) {
+            // If no data found => first launch
             val intent = Intent(this, IntroActivity::class.java)
             startActivityForResult(intent, INTRO_ACTIVITY)
             return
@@ -62,23 +68,59 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
            //val weeks = db.weeks
         }
 
+
+
+
+        Log.d(TAG, "DEBUG")
+        val ws = db.allWeeks
+        for(w in ws) {
+            Log.d(TAG, "${w.ID} - ${w.date} - ${w.goal}")
+        }
+
         Log.d(TAG, "onCreate")
-        setup()
+
+
+        when {
+            isEnded(settings) -> {
+                // If now out of time => finish purpose
+                showAlertDialog("Done",
+                    getString(R.string.end_alert_content) ,
+                    getString(R.string.dismiss))
+                cv_main_add.visibility = View.GONE
+                bottom_bar.visibility = View.GONE
+                setup(true)
+            }
+            !isStarted(settings) -> {
+                showAlertDialog("Not started yet.",
+                    getString(R.string.start_alert_content) + TimeUtils.formatTitle(TimeUtils.toCalendar(settings.startFormatted).toInstant(),"Europe/Paris",true),
+                    getString(R.string.dismiss))
+                cv_main_add.visibility = View.GONE
+                bottom_bar.visibility = View.GONE
+            }
+            else -> {
+                setup(false)
+            }
+        }
     }
 
-    private fun setup() {
-        getDataFromDB()
+    private fun setup(isStat: Boolean) {
+        getDataFromDB(true)
         setupViews()
         createFragments()
-        switchFragment(false)
+        switchFragment(isStat)
     }
 
-    private fun getDataFromDB() {
-        weeks = db.weeks
-        allowance = ExpenseUtils.computeNextWeekAllowance(
+    private fun getDataFromDB(refreshWeeks: Boolean) {
+        if(refreshWeeks)
+            weeks = db.weeks
+            allowance = ExpenseUtils.computeNextWeekAllowance(
             weeks,
             settings
         )
+
+        if(allowance.second == Double.MIN_VALUE) {
+            Log.d(TAG,"Currently last week or after.")
+        }
 
     }
 
@@ -87,6 +129,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val gson = Gson()
         val json = mPrefs.getString("Settings", null) ?: return false
         settings = gson.fromJson(json, Settings::class.java)
+        currency = settings.currency
         return settings != null
     }
 
@@ -104,6 +147,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         home.setOnClickListener(this)
         stats.setOnClickListener(this)
         plus_main.setOnClickListener(this)
+        settings_btn.setOnClickListener(this)
     }
 
     private fun createFragments() {
@@ -144,8 +188,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             R.id.home -> switchFragment(false)
             R.id.stats -> switchFragment(true)
             R.id.plus_main -> openExpense()
+            R.id.settings_btn -> openSettings()
             R.id.alertAction -> {
-                //db.addWeek(Week(cursor.getString(0), 50.0, "2021-02-08", -1.0))
+                //TODO: Multiple action ?
+                hideAlertDialog()
             }
             else -> Log.d(TAG, "Something unknown clicked (" + p0.id + ")")
         }
@@ -157,6 +203,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         alertContent.text = content
         alertAction.text = action
         alertAction.setOnClickListener(this)
+    }
+
+    private fun hideAlertDialog() {
+        alert.visibility = View.GONE
+    }
+
+    private fun openSettings() {
+        val i1 = Intent(this, SettingsActivity::class.java)
+        i1.putExtra("settings", Gson().toJson(settings))
+        startActivityForResult(i1, SETTINGS_ACTIVITY)
     }
 
     private fun openExpense() {
@@ -193,7 +249,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         settings = Gson().fromJson(data.getStringExtra("settings"), Settings::class.java)
         if(settings != null) {
             Log.d(TAG, settings.toString())
-            setup()
+            setup(false)
 
             //creating all weeks to database
             val weeks = WeekUtils.createWeeks(settings)
@@ -203,6 +259,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     db.addWeek(w)
             }
 
+            currency = settings.currency
             saveData()
         }
         else
@@ -214,6 +271,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun handleExpenseActivityResult(data: Intent) {
         Log.d(TAG, "handleExpenseActivityResult")
+
         if(data.getBooleanExtra("delete", false)) {
             val ID = data.getStringExtra("ID")
 
@@ -254,12 +312,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 //If nothing set for the current week
                 if(WeekUtils.getNow(weeks) == null) {
+                    weeks = db.weeks
                     Log.d(TAG, "First expense of the week. Setup goal:")
-                    val currentMonday = TimeUtils.formatSimple(TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(),"Europe/Paris")
-                    val nowAllowance = computeNowWeekAllowance(weeks,settings)
+                    val currentMonday = TimeUtils.formatSimple(
+                        TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(), "Europe/Paris"
+                    )
+                    val nowAllowance = computeNowWeekAllowance(weeks, settings)
                     Log.d(TAG, "currentMonday: $currentMonday nowAllowance: $nowAllowance")
 
-                    db.updateWeek(currentMonday,nowAllowance)
+                    db.updateWeek(currentMonday, nowAllowance)
                 }
 
                 db.addExpense(expense)
@@ -269,7 +330,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 db.updateExpense(expense)
             }
         }
-        getDataFromDB()
+        getDataFromDB(true)
         homeFragment.refresh()
         statsFragment.refresh()
     }
@@ -287,6 +348,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     companion object {
         const val EXPENSE_ACTIVITY: Int = 1
         const val INTRO_ACTIVITY: Int = 2
+        const val SETTINGS_ACTIVITY: Int = 3
         const val TAG: String = "MainActivity"
     }
 }

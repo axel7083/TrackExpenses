@@ -19,7 +19,7 @@
         app:layout_constraintVertical_bias="1.0"
         />
 
-    <com.google.android.material.tabs.TabLayout
+    <!--<com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
         app:tabBackground="@drawable/slider_dot_selector"
         app:tabGravity="center"
         app:tabIndicatorHeight="0dp"
-        />
+        />-->
 
 
     <Button

@@ -51,6 +51,13 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
             intent.getStringExtra("settings"),Settings::class.java
         )
 
+        currency_name.text = when(settings.currency) {
+            getString(R.string.euro_sign) -> "Euro"
+            getString(R.string.dollar_sign) -> "Dollar"
+            getString(R.string.mark_sign) -> "Mark"
+            else -> "None"
+        }
+
         val expJson = intent.getStringExtra("expense")
         if(expJson != null) {
             //Restore states

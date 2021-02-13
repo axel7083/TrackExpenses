@@ -1,0 +1,60 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory app:title="General">
+
+        <EditTextPreference
+            app:key="amount"
+            app:title="Total amount available"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="euro"
+            app:entries="@array/currency_entries"
+            app:entryValues="@array/currency_values"
+            app:key="currency"
+            app:title="Default currency used"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.github.trackexpenses.dialogs.NumberPickerPreference
+            android:key="number_picker_preference"
+            android:summary="VALUE"
+            android:title="Amount available" />
+
+    </PreferenceCategory>
+
+
+
+    <PreferenceCategory app:title="@string/messages_header">
+
+        <EditTextPreference
+            app:key="signature"
+            app:title="@string/signature_title"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="reply"
+            app:entries="@array/reply_entries"
+            app:entryValues="@array/reply_values"
+            app:key="reply"
+            app:title="@string/reply_title"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/sync_header">
+
+        <SwitchPreferenceCompat
+            app:key="sync"
+            app:title="@string/sync_title" />
+
+        <SwitchPreferenceCompat
+            app:dependency="sync"
+            app:key="attachment"
+            app:summaryOff="@string/attachment_summary_off"
+            app:summaryOn="@string/attachment_summary_on"
+            app:title="@string/attachment_title" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

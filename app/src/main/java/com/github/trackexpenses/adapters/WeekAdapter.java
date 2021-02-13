@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.trackexpenses.R;
 import com.github.trackexpenses.models.Week;
+import com.github.trackexpenses.utils.TimeUtils;
+import com.github.trackexpenses.utils.WeekUtils;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -30,12 +32,14 @@ public class WeekAdapter extends RecyclerView.Adapter<WeekAdapter.ViewHolder> {
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
     private Context context;
+    private String currency ;
 
     // data is passed into the constructor
-    public WeekAdapter(Context context,List<Week> mData) {
+    public WeekAdapter(Context context,List<Week> mData, String currency) {
         this.context =context;
         this.mInflater = LayoutInflater.from(context);
         this.mData = mData;
+        this.currency = currency;
     }
 
     public void updateData(List<Week> mData)
@@ -56,10 +60,19 @@ public class WeekAdapter extends RecyclerView.Adapter<WeekAdapter.ViewHolder> {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
 
-        holder.title_week.setText(formatTitle(toCalendar(mData.get(position).date, SIMPLE_PATTERN).toInstant(),"Europe/Paris",true));
+        if(mData.get(position).date.equals(formatSimple(TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(),"Europe/Paris")))
+        {
+            holder.title_week.setText("Current Week");
+        }
+        else
+        {
+            holder.title_week.setText(formatTitle(toCalendar(mData.get(position).date, SIMPLE_PATTERN).toInstant(),"Europe/Paris",true));
+        }
 
-        holder.spent_week.setText("$" +  df.format(mData.get(position).spent)); //TODO: replace $ with currency sign
-        holder.goal_week_price.setText("/$" + df.format(mData.get(position).goal)); //TODO: replace $ with currency sign
+
+
+        holder.spent_week.setText(currency +  df.format(mData.get(position).spent)); //TODO: replace $ with currency sign
+        holder.goal_week_price.setText("/" + currency + df.format(mData.get(position).goal)); //TODO: replace $ with currency sign
 
         holder.week_progress.setMax((int) mData.get(position).goal);
 

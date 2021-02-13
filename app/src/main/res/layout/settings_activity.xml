@@ -1,0 +1,51 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Action bar -->
+    <LinearLayout
+        android:id="@+id/action_bar_expense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <androidx.cardview.widget.CardView
+            android:layout_gravity="center"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="25dp"
+            android:layout_marginStart="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp">
+            <ImageView
+                android:id="@+id/back_settings"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_left_arrow"
+                android:padding="10dp"
+                app:tint="@color/arsenic"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?android:attr/selectableItemBackground" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:text="@string/title_activity_settings"
+            android:textSize="20dp"
+            android:textColor="@color/arsenic"
+            android:layout_marginVertical="10dp"
+            android:layout_marginStart="@dimen/side_margin"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/settings_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

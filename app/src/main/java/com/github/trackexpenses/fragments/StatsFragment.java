@@ -123,12 +123,24 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
             return;
         }
 
+        MainActivity main = ((MainActivity) getActivity());
+
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
 
+        total_remaining.setText(main.currency + df.format(main.allowance.component1()));
 
-        total_remaining.setText("$" + df.format(((MainActivity) getActivity()).allowance.component1()));
-        next_allowance.setText("$" + df.format(((MainActivity) getActivity()).allowance.component2()));
+        double nextWeeAllowance = main.allowance.component2();
+        Log.d(TAG,"setupOverView - nextWeeAllowance " + nextWeeAllowance);
+        if(nextWeeAllowance == Double.MIN_VALUE) {
+            Log.d(TAG,"Displaying 'none'");
+            next_allowance.setText("None");
+        }
+        else
+        {
+            next_allowance.setText(main.currency + df.format(nextWeeAllowance));
+        }
+
     }
 
     private void setupRV() {
@@ -137,7 +149,7 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
             return;
         }
 
-        adapter = new WeekAdapter(getContext(),((MainActivity) getActivity()).weeks);
+        adapter = new WeekAdapter(getContext(),((MainActivity) getActivity()).weeks,((MainActivity) getActivity()).currency);
         adapter.setClickListener(this);
         weeks_overview.setAdapter(adapter);
         weeks_overview.setLayoutManager(new LinearLayoutManager(getContext()));

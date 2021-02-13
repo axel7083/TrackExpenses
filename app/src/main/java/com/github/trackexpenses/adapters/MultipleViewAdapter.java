@@ -24,14 +24,16 @@ public class MultipleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     // The items to display in your RecyclerView
     private List<Object> items;
     private ArrayList<Category> categories;
+    private String currency;
 
     private final int EXPENSE = 0, TITLE = 1;
     private ExpenseViewHolder.ExpenseClickListener mClickListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MultipleViewAdapter(List<Object> items, ArrayList<Category> categories, ExpenseViewHolder.ExpenseClickListener mClickListener) {
+    public MultipleViewAdapter(List<Object> items, ArrayList<Category> categories,String currency, ExpenseViewHolder.ExpenseClickListener mClickListener) {
         this.items = items;
         this.categories = categories;
+        this.currency = currency;
         this.mClickListener = mClickListener;
     }
 
@@ -119,7 +121,7 @@ public class MultipleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 eVH.getCategory_expense_row().setText(cat.getName());
             }
 
-            eVH.getValue_expense_row().setText("- $" + expense.getValue()); //TODO: get character for currency
+            eVH.getValue_expense_row().setText("- " + currency + expense.getValue()); //TODO: get character for currency
         }
     }
 

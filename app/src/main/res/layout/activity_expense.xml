@@ -161,6 +161,7 @@
                     app:cardBackgroundColor="@color/blue"
                     app:cardCornerRadius="25dp">
                     <TextView
+                        android:id="@+id/currency_name"
                         android:paddingHorizontal="20dp"
                         android:paddingVertical="10dp"
                         android:layout_gravity="center"

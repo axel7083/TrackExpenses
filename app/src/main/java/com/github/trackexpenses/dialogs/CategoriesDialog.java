@@ -28,7 +28,7 @@ import java.util.List;
 public class CategoriesDialog extends Dialog implements
         View.OnClickListener, CategoryAdapter.ItemClickListener {
 
-    private static final String TAG = "LocationDialog";
+    private static final String TAG = "CategoriesDialog";
 
     private Callback callback;
 

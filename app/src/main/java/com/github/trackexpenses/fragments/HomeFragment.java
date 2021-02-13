@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
         now = getNow(((MainActivity) getActivity()).weeks);
         //fetch data
         ArrayList<Expense> weekly_expenses =  ((MainActivity) getActivity()).db.getCurrentWeekExpenses();
-        categories =  ((MainActivity) Objects.requireNonNull(getActivity())).db.getCategories();
+        categories =  ((MainActivity) getActivity()).db.getCategories();
         items = TimeUtils.separateWithTitle(weekly_expenses);
         return true;
     }
@@ -147,20 +147,28 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
             card_info.setVisibility(View.VISIBLE);
         }
 
+        if(getActivity() == null) {
+            Log.d(TAG,"Error getActivity NULL");
+            return;
+        }
+
         updateCardView();
 
         if(adapter == null)
-            adapter = new MultipleViewAdapter(items, categories, this);
+            adapter = new MultipleViewAdapter(items, categories, ((MainActivity)getActivity()).currency, this);
         week_overview.setAdapter(adapter);
         week_overview.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
     private void updateCardView() {
+
+        MainActivity main = (MainActivity) getActivity();
+
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
 
-        expense_home.setText("$ " + df.format(now.getSpent()));
-        remaining.setText("$ " + df.format(now.getGoal()-now.getSpent()));
+        expense_home.setText(main.currency + " " + df.format(now.getSpent()));
+        remaining.setText(main.currency + " " + df.format(now.getGoal()-now.getSpent()));
 
         if(now.getSpent() < now.getGoal())
         {

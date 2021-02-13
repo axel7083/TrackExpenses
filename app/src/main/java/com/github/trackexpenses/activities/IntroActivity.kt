@@ -39,7 +39,7 @@ class IntroActivity : AppCompatActivity() {
 
         // bind views
         viewPager = findViewById(R.id.pagerIntroSlider)
-        val tabLayout = findViewById<TabLayout>(R.id.tabs)
+        //val tabLayout = findViewById<TabLayout>(R.id.tabs)
         button = findViewById(R.id.button)
 
         // init slider pager adapter
@@ -53,7 +53,7 @@ class IntroActivity : AppCompatActivity() {
         viewPager.setSwipeable(false)
 
         // set dot indicators
-        tabLayout.setupWithViewPager(viewPager)
+        //tabLayout.setupWithViewPager(viewPager)
 
         // make status bar transparent
         changeStatusBarColor()
@@ -63,6 +63,11 @@ class IntroActivity : AppCompatActivity() {
                     adapter.getItem(viewPager.currentItem) as ISlideOperator
 
                 if (slide.canNext()) {
+
+                    if(viewPager.currentItem == adapter.count - 2) {
+                        (adapter.getItem(3) as AmountFragment).currency = (adapter.getItem(2) as CurrencyPickerFragment).currency
+                        (adapter.getItem(3) as AmountFragment).refresh()
+                    }
 
                     if(viewPager.currentItem == adapter.count -1) {
                         Toast.makeText(this,"Get started",Toast.LENGTH_SHORT).show()

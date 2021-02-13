@@ -169,6 +169,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return arrayList;
     }
 
+    public ArrayList<Week> getAllWeeks() {
+        // select all query
+        String select_query= "SELECT *FROM " + TABLE_WEEK;
+        SQLiteDatabase db = this .getWritableDatabase();
+        Cursor cursor = db.rawQuery(select_query, null);
+
+        return extractWeeks(cursor);
+    }
+
+
     public ArrayList<Week> getWeeks() {
         SQLiteDatabase db = this .getWritableDatabase();
 
@@ -249,10 +259,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void updateWeek(String date, double goal) {
-        SQLiteDatabase db = this .getWritableDatabase();
+        /*SQLiteDatabase db = this .getWritableDatabase();
         db.rawQuery("UPDATE " + TABLE_WEEK + " SET Goal = " + goal + " WHERE Date='" + date + "'"  , null);
-        db.close();
+        db.close();*/
+
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        //updating row
+        Week w = new Week();
+        w.setDate(date);
+        w.setGoal(goal);
+        int i = sqLiteDatabase.update(TABLE_WEEK, extractValuesWeek(w), "Date='" + date + "'", null);
+        Log.d(TAG,"updateWeek: " + i);
+        sqLiteDatabase.close();
     }
+
+
 
     //update the expense
     public void updateExpense(Expense expense) {
@@ -268,6 +289,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //updating row
         sqLiteDatabase.update(TABLE_CATEGORY, extractValuesCategory(category), "ID=" + category.getID(), null);
         sqLiteDatabase.close();
+    }
+
+    private static ArrayList<Week> extractWeeks(Cursor cursor) {
+        ArrayList<Week> arrayList = new ArrayList<>();
+
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                Week week = new Week();
+                week.setID(cursor.getString(0));
+                week.setGoal(cursor.getDouble(1));
+                week.setDate(cursor.getString(2));
+
+                arrayList.add(week);
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        return arrayList;
     }
 
 

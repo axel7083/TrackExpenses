@@ -1,6 +1,7 @@
 package com.github.trackexpenses.utils;
 
 import com.github.trackexpenses.models.Expense;
+import com.github.trackexpenses.models.Settings;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -65,6 +66,23 @@ public class TimeUtils {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal;
+    }
+
+    public static boolean isEnded(Settings settings) {
+        Calendar now = getNow();
+        Calendar end = toCalendar(settings.endFormatted);
+        return end.before(now);
+    }
+
+    public static boolean isStarted(Settings settings) {
+        Calendar now = getNow();
+        Calendar start = toCalendar(settings.startFormatted);
+
+        //If is same day.
+        if(formatSimple(now.toInstant(),"Europe/Paris").equals(formatSimple(start.toInstant(),"Europe/Paris")))
+            return true;
+
+        return start.before(now);
     }
 
     public static String formatSQL(Instant instant_start, String timezone) {

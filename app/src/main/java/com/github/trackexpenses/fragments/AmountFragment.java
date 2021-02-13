@@ -29,6 +29,8 @@ public class AmountFragment extends Fragment implements ISlideOperator {
   private int position;
   private EditText amount_input;
   public double amount;
+  public String currency;
+  private TextView currency_amount;
 
   public AmountFragment() {
     // Required empty public constructor
@@ -68,6 +70,7 @@ public class AmountFragment extends Fragment implements ISlideOperator {
     super.onViewCreated(view, savedInstanceState);
 
     amount_input = view.findViewById(R.id.amount_input);
+    currency_amount = view.findViewById(R.id.currency_amount);
     amount_input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
       @Override
       public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -77,6 +80,10 @@ public class AmountFragment extends Fragment implements ISlideOperator {
         return false;
       }
     });
+  }
+
+  public void refresh() {
+    currency_amount.setText(currency);
   }
 
   @Override

@@ -1,8 +1,10 @@
 package com.github.trackexpenses.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Week {
     public String ID;
     public double goal;
