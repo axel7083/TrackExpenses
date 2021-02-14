@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             startActivityForResult(intent, INTRO_ACTIVITY)
             return
         }
-        else
+        /*else
         {
             val period = settings!!.startFormatted + " -> " + settings!!.endFormatted;
             Log.d(TAG, "PERIOD: $period")
@@ -66,16 +66,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
            // showAlertDialog("Debugging", "Debug purpose only", "Debug")
            //val weeks = db.weeks
-        }
+        }*/
 
 
 
 
-        Log.d(TAG, "DEBUG")
+        /*Log.d(TAG, "DEBUG")
         val ws = db.allWeeks
         for(w in ws) {
             Log.d(TAG, "${w.ID} - ${w.date} - ${w.goal}")
-        }
+        }*/
 
         Log.d(TAG, "onCreate")
 

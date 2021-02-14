@@ -8,4 +8,5 @@ public class Settings {
     public String currency;
     public String startFormatted;
     public String endFormatted;
+    public String version;
 }
