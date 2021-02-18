@@ -17,8 +17,30 @@
         <item>🎁</item>
     </string-array>
 
+    <!-- Open-source Libraries -->
+    <string-array name="libraries_name">
+        <item>MaterialDateTimePicker</item>
+        <item>Lombok</item>
+        <item>MPAndroidChart</item>
+        <item>Android Segmented Control</item>
+        <item>Gson</item>
+    </string-array>
 
+    <string-array name="libraries_url">
+        <item>https://github.com/wdullaer/MaterialDateTimePicker</item>
+        <item>https://github.com/rzwitserloot/lombok</item>
+        <item>https://github.com/PhilJay/MPAndroidChart</item>
+        <item>https://github.com/Kaopiz/android-segmented-control</item>
+        <item>https://github.com/google/gson</item>
+    </string-array>
 
+    <string-array name="libraries_license">
+        <item>Apache License</item>
+        <item>MIT License</item>
+        <item>Apache License</item>
+        <item>MIT License</item>
+        <item>Apache License</item>
+    </string-array>
 
     <!-- Reply Preference -->
     <string-array name="reply_entries">
@@ -40,9 +62,9 @@
     </string-array>
 
     <string-array name="currency_values">
-        <item>euro</item>
-        <item>dollar</item>
-        <item>mark</item>
+        <item>€</item>
+        <item>$</item>
+        <item>KM</item>
     </string-array>
 
 </resources>

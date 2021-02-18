@@ -1,24 +1,46 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory app:title="General">
+    <PreferenceCategory
+        app:title="Application"
+        app:iconSpaceReserved="false">
 
         <EditTextPreference
             app:key="@string/amount_key"
+            app:iconSpaceReserved="false"
             app:title="Total amount available" />
 
         <ListPreference
             app:defaultValue="euro"
             app:entries="@array/currency_entries"
+            app:iconSpaceReserved="false"
             app:entryValues="@array/currency_values"
             app:key="@string/currency_key"
             app:title="Default currency used" />
 
         <com.github.trackexpenses.dialogs.DatePickerPreference
             app:key="@string/end_date_key"
+            app:iconSpaceReserved="false"
             app:title="Change the end date"/>
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        app:title="General"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            app:key="@string/version_key"
+            app:iconSpaceReserved="false"
+            app:title="About TrackExpenses"/>
+
+        <Preference
+            app:key="libraries"
+            app:iconSpaceReserved="false"
+            app:title="Open-source libraries"/>
+
+    </PreferenceCategory>
+
 
     <!--<PreferenceCategory app:title="@string/messages_header">
 

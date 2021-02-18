@@ -2,7 +2,6 @@ package com.github.trackexpenses.adapters;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.github.trackexpenses.R;
 import com.github.trackexpenses.models.Week;
 import com.github.trackexpenses.utils.TimeUtils;
-import com.github.trackexpenses.utils.WeekUtils;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -50,7 +48,7 @@ public class WeekAdapter extends RecyclerView.Adapter<WeekAdapter.ViewHolder> {
     // inflates the row layout from xml when needed
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.week_row, parent, false);
+        View view = mInflater.inflate(R.layout.row_week, parent, false);
         return new ViewHolder(view);
     }
 

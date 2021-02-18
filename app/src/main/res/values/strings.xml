@@ -31,8 +31,9 @@
     <string name="intro_str">This app allow you to track your expenses\n for a defined period of time</string>
     <string name="euro_sign">€</string>
     <string name="dollar_sign">$</string>
-    <string name="mark_sign">"KM "</string>
+    <string name="mark_sign">KM </string>
     <string name="end_date_key">end_date</string>
     <string name="currency_key">currency</string>
     <string name="amount_key">amount</string>
+    <string name="version_key">version</string>
 </resources>

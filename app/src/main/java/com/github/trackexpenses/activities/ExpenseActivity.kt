@@ -1,9 +1,11 @@
 package com.github.trackexpenses.activities
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Parcel
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -13,22 +15,24 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.trackexpenses.R
 import com.github.trackexpenses.dialogs.CategoriesDialog
+import com.github.trackexpenses.fragments.SettingsFragment
 import com.github.trackexpenses.models.Category
 import com.github.trackexpenses.models.Expense
 import com.github.trackexpenses.models.Settings
 import com.github.trackexpenses.utils.CategoryUtils
 import com.github.trackexpenses.utils.TimeUtils
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.CalendarConstraints.DateValidator
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import kotlinx.android.synthetic.main.activity_expense.*
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
 
 
-class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
-    DatePickerDialog.OnDateSetListener, CategoriesDialog.Callback {
+class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDialog.Callback {
 
     private val TAG: String = "ExpenseActivity"
 
@@ -48,7 +52,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
         )
 
         settings = Gson().fromJson(
-            intent.getStringExtra("settings"),Settings::class.java
+            intent.getStringExtra("settings"), Settings::class.java
         )
 
         currency_name.text = when(settings.currency) {
@@ -111,17 +115,10 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
             return;
 
         when (p0.id) {
-            R.id.calendar_input -> {
-
-                val calendar = Calendar.getInstance()
-                calendar.timeInMillis = System.currentTimeMillis()
-                calendar[Calendar.HOUR] = 23
-                calendar[Calendar.MINUTE] = 59
-                calendar[Calendar.SECOND] = 59
-                calendar[Calendar.MILLISECOND] = 999
+            R.id.calendar_input -> showCalendarDialog()/* {
 
                 val now: Calendar = Calendar.getInstance()
-                val dpd: DatePickerDialog = DatePickerDialog.newInstance(
+                val dpd: MaterialDatePicker = DatePickerDialog.newInstance(
                     this,
                     now.get(Calendar.YEAR),  // Initial year selection
                     now.get(Calendar.MONTH),  // Initial month selection
@@ -132,7 +129,8 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
                 // If you're calling this from a support Fragment
                 // If you're calling this from a support Fragment
                 dpd.show(supportFragmentManager, "Datepickerdialog");
-            }
+
+            }*/
             R.id.btn_cancel, R.id.back_expense -> finishActivity(false)
             R.id.category_input -> showCategoriesDialog()
             R.id.btn_save -> {
@@ -145,6 +143,60 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
 
             }
         }
+    }
+
+    private fun showCalendarDialog() {
+
+        val monday =TimeUtils.getMonday(
+            settings.startFormatted,
+            "Europe/Paris"
+        );
+        val now = TimeUtils.getNow()
+        now[Calendar.HOUR_OF_DAY] = 23
+        now[Calendar.MINUTE] = 59
+        now[Calendar.SECOND] = 59
+
+        val builderRange = MaterialDatePicker.Builder.datePicker()
+
+        if(expense.Date != null )
+            builderRange.setSelection(TimeUtils.toCalendar(expense.Date).timeInMillis)
+        else
+            builderRange.setSelection(now.timeInMillis)
+
+        val constraintsBuilderRange = CalendarConstraints.Builder()
+
+        constraintsBuilderRange.setValidator(object : DateValidator {
+            override fun isValid(date: Long): Boolean {
+                val pick = Calendar.getInstance()
+                pick.timeInMillis = date
+
+                return !pick.before(monday) && !pick.after(now)
+            }
+
+            override fun describeContents(): Int {
+                return 0
+            }
+
+            override fun writeToParcel(parcel: Parcel, i: Int) {}
+        })
+
+        builderRange.setTheme(R.style.ThemeOverlayCatalogMaterialCalendarCustom)
+        builderRange.setTitleText("Choose a date")
+
+        builderRange.setCalendarConstraints(constraintsBuilderRange.build())
+
+        val pickerRange = builderRange.build()
+
+        pickerRange.addOnCancelListener { }
+        pickerRange.addOnPositiveButtonClickListener {
+            val cal = Calendar.getInstance()
+            cal.timeInMillis = pickerRange.selection!!
+
+            expense.Date = (TimeUtils.formatSQL(cal.toInstant(), "Europe/Paris"))
+            date_display.text = TimeUtils.formatTitle(cal.toInstant(), "Europe/Paris", true)
+        }
+
+        pickerRange.show(supportFragmentManager,"0")
     }
 
     private fun showCategoriesDialog() {
@@ -267,7 +319,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
     /**
      * Callback from DatePicker
      * **/
-    override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+    /*override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
         val output: Calendar = Calendar.getInstance()
         output[Calendar.YEAR] = year
         output[Calendar.DAY_OF_MONTH] = dayOfMonth
@@ -276,7 +328,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener,
 
         expense.Date = (TimeUtils.formatSQL(output.toInstant(), "Europe/Paris"))
         date_display.text = TimeUtils.formatTitle(output.toInstant(), "Europe/Paris", true)
-    }
+    }*/
 
     /**
      * Callback from CategoriesDialog

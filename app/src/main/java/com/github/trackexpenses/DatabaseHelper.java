@@ -255,6 +255,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         sqLiteDatabase.close();
     }
 
+    public void deleteWeek(String ID) {
+        SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();
+        //deleting row
+        sqLiteDatabase.delete(TABLE_WEEK, "ID=" + ID, null);
+        sqLiteDatabase.close();
+    }
+
     //update a week
     public void updateWeek(Week week) {
         SQLiteDatabase sqLiteDatabase = this.getWritableDatabase();

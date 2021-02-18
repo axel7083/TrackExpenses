@@ -70,11 +70,11 @@ public class MultipleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         switch (viewType) {
             case EXPENSE:
-                View v1 = inflater.inflate(R.layout.expense_row, viewGroup, false);
+                View v1 = inflater.inflate(R.layout.row_expense, viewGroup, false);
                 viewHolder = new ExpenseViewHolder(v1);
                 break;
             case TITLE:
-                View v2 = inflater.inflate(R.layout.title_row, viewGroup, false);
+                View v2 = inflater.inflate(R.layout.row_title, viewGroup, false);
                 viewHolder = new TitleViewHolder(v2);
                 break;
             default:

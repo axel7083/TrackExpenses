@@ -21,6 +21,8 @@ import com.github.trackexpenses.utils.TimeUtils
 import com.github.trackexpenses.utils.TimeUtils.isEnded
 import com.github.trackexpenses.utils.TimeUtils.isStarted
 import com.github.trackexpenses.utils.WeekUtils
+import com.github.trackexpenses.utils.WeekUtils.getMissingWeeks
+import com.github.trackexpenses.utils.WeekUtils.getRemovedWeeks
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -238,10 +240,81 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 handleIntroActivityResult(data)
             }
+            SETTINGS_ACTIVITY -> {
+                if (resultCode == RESULT_CANCELED || data == null) {
+                    return
+                }
+                handleSettingActivityResult(data)
+            }
             else -> {
                 Log.d(TAG, "Unknown activity requestCode")
             }
         }
+    }
+
+    private fun handleSettingActivityResult(data: Intent) {
+
+        val settings = Gson().fromJson(data.getStringExtra("settings"),Settings::class.java)
+
+
+        if(!settings.equals(this.settings)){
+            Toast.makeText(this,"Setting has changed. Updating..",Toast.LENGTH_SHORT).show()
+            Log.d(TAG,"settings: " + settings.currency)
+
+
+            if(!this.settings.compareEndDate(settings)) {
+                Log.d(TAG,"End date edited")
+
+                val weeks2 = WeekUtils.createWeeks(settings)
+                val weeks1 = db.allWeeks
+
+                //Do we have to update the database ?
+                if(weeks2.size != weeks1.size) {
+                    if(weeks2.size > weeks1.size) {
+                        Log.d(TAG,"The new number of week is greater than the old one (${weeks1.size} | ${weeks2.size})")
+                        val missingWeeks = getMissingWeeks(weeks1, weeks2)
+                        Log.d(TAG,"Adding ${missingWeeks.size} weeks to db")
+                        for(week in missingWeeks) {
+                            Log.d(TAG, "week: $week")
+                            db.addWeek(week)
+                        }
+                    }
+                    else
+                    {
+                        Log.d(TAG,"The new number of week is smaller than the old one")
+                        val removedWeeks = getRemovedWeeks(weeks1,weeks2)
+                        Log.d(TAG,"Removing ${removedWeeks.size} weeks to db")
+                        for(week in removedWeeks) {
+                            Log.d(TAG, "week: $week")
+                            db.deleteWeek(week.ID)
+                        }
+                    }
+
+                    updateCurrentWeek(settings)
+                }
+                else
+                {
+                    Log.d(TAG,"New end date on same week than previous, no change to db.")
+                }
+            }
+
+            if(!this.settings.compareAmount(settings)) {
+                Log.d(TAG,"Amount updated")
+                updateCurrentWeek(settings)
+            }
+
+            if(!this.settings.compareCurrency(settings)) {
+                currency = settings.currency
+            }
+
+            this.settings = settings
+            saveData()
+
+            getDataFromDB(true)
+            homeFragment.refresh()
+            statsFragment.refresh()
+        }
+
     }
 
     private fun handleIntroActivityResult(data: Intent) {
@@ -312,15 +385,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 //If nothing set for the current week
                 if(WeekUtils.getNow(weeks) == null) {
-                    weeks = db.weeks
                     Log.d(TAG, "First expense of the week. Setup goal:")
-                    val currentMonday = TimeUtils.formatSimple(
-                        TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(), "Europe/Paris"
-                    )
-                    val nowAllowance = computeNowWeekAllowance(weeks, settings)
-                    Log.d(TAG, "currentMonday: $currentMonday nowAllowance: $nowAllowance")
-
-                    db.updateWeek(currentMonday, nowAllowance)
+                    updateCurrentWeek(settings)
                 }
 
                 db.addExpense(expense)
@@ -333,6 +399,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         getDataFromDB(true)
         homeFragment.refresh()
         statsFragment.refresh()
+    }
+
+    private fun updateCurrentWeek(settings: Settings) {
+        weeks = db.weeks
+        val currentMonday = TimeUtils.formatSimple(
+            TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(), "Europe/Paris"
+        )
+        val nowAllowance = computeNowWeekAllowance(weeks, settings)
+        Log.d(TAG, "currentMonday: $currentMonday nowAllowance: $nowAllowance")
+
+        db.updateWeek(currentMonday, nowAllowance)
     }
 
     var backCount: Long = 0

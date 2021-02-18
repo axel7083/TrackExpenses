@@ -103,4 +103,26 @@ public class WeekUtils {
 
         return left;
     }
+
+    public static ArrayList<Week> getMissingWeeks(ArrayList<Week> original, ArrayList<Week> newOne) {
+        if(original.size()>newOne.size())
+            return null;
+
+        ArrayList<Week> weeks = new ArrayList<>();
+        for(int i = original.size(); i < newOne.size(); i++) {
+            weeks.add(newOne.get(i));
+        }
+        return weeks;
+    }
+
+    public static ArrayList<Week> getRemovedWeeks(ArrayList<Week> original, ArrayList<Week> newOne) {
+        if(original.size()<=newOne.size())
+            return null;
+
+        ArrayList<Week> weeks = new ArrayList<>();
+        for(int i = newOne.size(); i < original.size(); i++) {
+            weeks.add(original.get(i));
+        }
+        return weeks;
+    }
 }

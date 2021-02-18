@@ -184,7 +184,7 @@
             android:id="@+id/current_week_expenses"
             android:nestedScrollingEnabled="false"
             android:layout_width="match_parent"
-            tools:listitem="@layout/expense_row"
+            tools:listitem="@layout/row_expense"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>

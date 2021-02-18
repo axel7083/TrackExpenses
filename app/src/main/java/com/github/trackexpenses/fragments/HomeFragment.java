@@ -93,6 +93,7 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
     }
 
     public void refresh() {
+        Log.d(TAG,"refresh");
         boolean wasNul = false;
         if(now == null) {
             setupView();
@@ -113,9 +114,13 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
                 updateCardView();
 
             Log.d(TAG,"NOW: " + now);
-            adapter.setItems(items);
-            adapter.setCategories(categories);
-            adapter.notifyDataSetChanged();
+
+            if(adapter != null) {
+                adapter.setCurrency(((MainActivity)getActivity()).currency);
+                adapter.setItems(items);
+                adapter.setCategories(categories);
+                adapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -156,6 +161,7 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
 
         if(adapter == null)
             adapter = new MultipleViewAdapter(items, categories, ((MainActivity)getActivity()).currency, this);
+
         week_overview.setAdapter(adapter);
         week_overview.setLayoutManager(new LinearLayoutManager(getContext()));
     }

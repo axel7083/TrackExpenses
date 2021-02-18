@@ -27,6 +27,17 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    signingConfigs {
+        buildTypes {
+            debug {
+                buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date(" + System.currentTimeMillis() + "L)"
+            }
+            release {
+                buildConfigField "java.util.Date", "BUILD_TIME", "new java.util.Date(" + System.currentTimeMillis() + "L)"
+            }
+        }
+    }
 }
 
 dependencies {
@@ -46,7 +57,7 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
 
     implementation "com.google.code.gson:gson:2.8.6"
-    implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+    //implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
 
 
     implementation 'org.projectlombok:lombok:1.18.12'
