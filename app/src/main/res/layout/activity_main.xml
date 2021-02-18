@@ -29,7 +29,7 @@
 
 
         <androidx.cardview.widget.CardView
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_gravity="center"
             app:cardElevation="0dp"
             app:cardBackgroundColor="@android:color/transparent"

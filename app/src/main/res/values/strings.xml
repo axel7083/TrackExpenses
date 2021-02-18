@@ -32,4 +32,7 @@
     <string name="euro_sign">€</string>
     <string name="dollar_sign">$</string>
     <string name="mark_sign">"KM "</string>
+    <string name="end_date_key">end_date</string>
+    <string name="currency_key">currency</string>
+    <string name="amount_key">amount</string>
 </resources>

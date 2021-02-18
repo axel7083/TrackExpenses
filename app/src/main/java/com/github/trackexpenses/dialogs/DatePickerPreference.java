@@ -10,95 +10,66 @@ import androidx.preference.DialogPreference;
 
 import com.github.trackexpenses.R;
 
-public class NumberPickerPreference extends DialogPreference {
+public class DatePickerPreference extends DialogPreference {
     // the values to use for the NumberPicker
-    private int mValue = 0;
-    private int mDefaultValue = 5;
-    private int mMaxValue = 7;
-    private int mMinValue = 1;
-    private boolean mWrapSelectorWheel = false; // enable or disable the 'circular behavior' - set on false
+    private String mValue;
+    private String mDefaultValue = "WALLAH";
 
-    public NumberPickerPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public DatePickerPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public NumberPickerPreference(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DatePickerPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs, defStyleAttr, 0);
     }
 
-    public NumberPickerPreference(Context context, AttributeSet attrs) {
+    public DatePickerPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs, 0, 0);
     }
 
-    public NumberPickerPreference(Context context) {
+    public DatePickerPreference(Context context) {
         super(context);
         init(context, null, 0, 0);
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         TypedArray ta = context.obtainStyledAttributes(
-                attrs, R.styleable.Number_Picker_attrs, defStyleAttr, defStyleRes);
-        mMinValue = ta.getInt(R.styleable.Number_Picker_attrs_np_minValue, mMinValue);
-        mMaxValue = ta.getInt(R.styleable.Number_Picker_attrs_np_maxValue, mMaxValue);
-        mDefaultValue = ta.getInt(R.styleable.Number_Picker_attrs_np_defaultValue, mDefaultValue);
-        mWrapSelectorWheel = ta.getBoolean(R.styleable.Number_Picker_attrs_np_wrapSelector, mWrapSelectorWheel);
+                attrs, R.styleable.Date_Picker_attr, defStyleAttr, defStyleRes);
+        mDefaultValue = ta.getString(R.styleable.Date_Picker_attr_dp_defaultValue);
         ta.recycle();
-        setDialogLayoutResource(R.layout.number_picker_layout_preference);
     }
 
-    public void setValue(int value) {
+    public void setValue(String value) {
         final boolean wasBlocking = shouldDisableDependents();
         mValue = value;
-        persistInt(value);
+        persistString(value);
         final boolean isBlocking = shouldDisableDependents();
         if (isBlocking != wasBlocking) {
             notifyDependencyChange(isBlocking);
         }
     }
 
-    public int getValue() {
+    public String getValue() {
         return mValue;
     }
 
-    public int getDefaultValue() {
+    public String getDefaultValue() {
         return mDefaultValue;
     }
 
-    public void setDefaultValue(int defaultValue) {
+    public void setDefaultValue(String defaultValue) {
         mDefaultValue = defaultValue;
     }
 
-    public int getMinValue() {
-        return mMinValue;
-    }
 
-    public void setMinValue(int minValue) {
-        mMinValue = minValue;
-    }
 
-    public int getMaxValue() {
-        return mMaxValue;
-    }
 
-    public void setMaxValue(int maxValue) {
-        mMaxValue = maxValue;
-    }
-
-    public boolean getSelectorWheelValue() {
-        return mWrapSelectorWheel;
-    }
-
-    public void setSelectorWheelValue(boolean wrapSelectorWheel) {
-        mWrapSelectorWheel = wrapSelectorWheel;
-    }
-
-    @NonNull
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
-        return a.getInt(index, mDefaultValue);
+        return a.getString(index);
     }
 
     @Override
@@ -131,11 +102,11 @@ public class NumberPickerPreference extends DialogPreference {
     }
 
     private static class SavedState extends BaseSavedState {
-        int value;
+        String value;
 
         public SavedState(Parcel source) {
             super(source);
-            value = source.readInt();
+            value = source.readString();
         }
 
         public SavedState(Parcelable superState) {
@@ -145,7 +116,7 @@ public class NumberPickerPreference extends DialogPreference {
         @Override
         public void writeToParcel(Parcel dest, int flags) {
             super.writeToParcel(dest, flags);
-            dest.writeInt(value);
+            dest.writeString(value);
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {

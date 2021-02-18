@@ -4,28 +4,23 @@
     <PreferenceCategory app:title="General">
 
         <EditTextPreference
-            app:key="amount"
-            app:title="Total amount available"
-            app:useSimpleSummaryProvider="true" />
+            app:key="@string/amount_key"
+            app:title="Total amount available" />
 
         <ListPreference
             app:defaultValue="euro"
             app:entries="@array/currency_entries"
             app:entryValues="@array/currency_values"
-            app:key="currency"
-            app:title="Default currency used"
-            app:useSimpleSummaryProvider="true" />
+            app:key="@string/currency_key"
+            app:title="Default currency used" />
 
-        <com.github.trackexpenses.dialogs.NumberPickerPreference
-            android:key="number_picker_preference"
-            android:summary="VALUE"
-            android:title="Amount available" />
+        <com.github.trackexpenses.dialogs.DatePickerPreference
+            app:key="@string/end_date_key"
+            app:title="Change the end date"/>
 
     </PreferenceCategory>
 
-
-
-    <PreferenceCategory app:title="@string/messages_header">
+    <!--<PreferenceCategory app:title="@string/messages_header">
 
         <EditTextPreference
             app:key="signature"
@@ -55,6 +50,6 @@
             app:summaryOn="@string/attachment_summary_on"
             app:title="@string/attachment_title" />
 
-    </PreferenceCategory>
+    </PreferenceCategory>-->
 
 </PreferenceScreen>
