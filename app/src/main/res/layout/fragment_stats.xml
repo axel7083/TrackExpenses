@@ -50,7 +50,6 @@
                     android:focusable="false"
                     android:background="@android:color/transparent"/>
 
-
             </LinearLayout>
 
         </androidx.cardview.widget.CardView>

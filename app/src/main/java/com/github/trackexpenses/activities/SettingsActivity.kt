@@ -34,8 +34,6 @@ class SettingsActivity : AppCompatActivity(), OverviewSettingsFragment.OverviewC
 
         displayDefaultSettings()
 
-        Toast.makeText(this, "WORK IN PROGRESS", Toast.LENGTH_SHORT).show()
-
         back_settings.setOnClickListener {
             onBackPressed()
         }

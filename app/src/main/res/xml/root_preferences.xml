@@ -24,16 +24,17 @@
             app:title="Change the end date"/>
 
         <Preference
+            app:key="@string/overview_key"
+            app:iconSpaceReserved="false"
+            app:summary="Select sections to display in the overview fragment"
+            app:title="Overview settings"/>
+
+        <Preference
             app:key="@string/reset_key"
             app:iconSpaceReserved="false"
             app:summary="Delete and reset all application content"
             app:title="Reset"/>
 
-        <Preference
-            app:key="@string/overview_key"
-            app:iconSpaceReserved="false"
-            app:summary="Select sections to display in the overview fragment"
-            app:title="Overview settings"/>
 
     </PreferenceCategory>
 
