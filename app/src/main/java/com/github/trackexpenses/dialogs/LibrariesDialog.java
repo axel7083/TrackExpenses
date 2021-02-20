@@ -8,13 +8,18 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.trackexpenses.BuildConfig;
 import com.github.trackexpenses.R;
+import com.github.trackexpenses.adapters.LibrariesAdapter;
+import com.github.trackexpenses.models.Library;
 import com.github.trackexpenses.utils.TimeUtils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 public class LibrariesDialog extends Dialog implements
@@ -24,8 +29,20 @@ public class LibrariesDialog extends Dialog implements
 
     private RecyclerView rv_libraries;
 
+    private List<Library> libs;
+
     public LibrariesDialog(Activity activity) {
         super(activity);
+
+        libs = new ArrayList<>();
+
+        String[] lib_name = activity.getResources().getStringArray(R.array.libraries_name);
+        String[] lib_license = activity.getResources().getStringArray(R.array.libraries_license);
+        String[] lib_url = activity.getResources().getStringArray(R.array.libraries_url);
+
+        for(int i = 0 ; i < lib_name.length; i++) {
+            libs.add(new Library(lib_name[i],lib_license[i],lib_url[i]));
+        }
     }
 
     @Override
@@ -40,7 +57,9 @@ public class LibrariesDialog extends Dialog implements
     private void setupViews()
     {
         rv_libraries = findViewById(R.id.rv_libraries);
-
+        LibrariesAdapter adapter = new LibrariesAdapter(getContext(), libs);
+        rv_libraries.setAdapter(adapter);
+        rv_libraries.setLayoutManager(new LinearLayoutManager(getContext()));
 
         findViewById(R.id.btn_close).setOnClickListener(this);
     }

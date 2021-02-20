@@ -35,11 +35,11 @@
     </string-array>
 
     <string-array name="libraries_license">
-        <item>Apache License</item>
-        <item>MIT License</item>
-        <item>Apache License</item>
-        <item>MIT License</item>
-        <item>Apache License</item>
+        <item>https://github.com/wdullaer/MaterialDateTimePicker/blob/master/LICENSE</item>
+        <item>https://github.com/rzwitserloot/lombok/blob/master/LICENSE</item>
+        <item>https://github.com/PhilJay/MPAndroidChart/blob/master/LICENSE</item>
+        <item>https://github.com/Kaopiz/android-segmented-control</item>
+        <item>https://github.com/google/gson/blob/master/LICENSE</item>
     </string-array>
 
     <!-- Reply Preference -->

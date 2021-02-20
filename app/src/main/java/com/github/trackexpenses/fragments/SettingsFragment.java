@@ -1,5 +1,6 @@
 package com.github.trackexpenses.fragments;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -19,9 +20,10 @@ import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
-import com.github.trackexpenses.ISettingChanged;
 import com.github.trackexpenses.R;
+import com.github.trackexpenses.activities.SettingsActivity;
 import com.github.trackexpenses.dialogs.DatePickerPreference;
+import com.github.trackexpenses.dialogs.LibrariesDialog;
 import com.github.trackexpenses.dialogs.VersionDialog;
 import com.github.trackexpenses.models.Settings;
 import com.github.trackexpenses.utils.TimeUtils;
@@ -102,34 +104,72 @@ public class SettingsFragment  extends PreferenceFragmentCompat implements Prefe
             bindPreferenceSummaryToValue(end_date);
         }
 
+        /* reset */
+        Preference reset_key = findPreference(getString(R.string.reset_key));
+        if(reset_key != null) {
+            reset_key.setOnPreferenceClickListener(preference -> {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Reset")
+                        .setMessage("Are you sure you want to reset and delete all application data ?\n\nThe application will close after confirmation.")
+
+                        // Specifying a listener allows you to take an action before dismissing the dialog.
+                        // The dialog is automatically dismissed when a dialog button is clicked.
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Continue with delete operation
+                                ((SettingsActivity) getActivity()).resetApplication();
+                            }
+                        })
+
+                        // A null listener allows the button to dismiss the dialog and take no further action.
+                        .setNegativeButton(R.string.cancel, null)
+                        .setIcon(R.drawable.ic_warning_24px)
+                        .show();
+
+                return false;
+            });
+        }
+
     }
 
     private void setupGeneralPreferences()  {
         Preference versionPreference = getPreferenceManager().findPreference(getString(R.string.version_key));
         if(versionPreference != null) {
-            versionPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
+            versionPreference.setOnPreferenceClickListener(preference -> {
 
-                    VersionDialog dialog = new VersionDialog(getActivity());
-                    Window window = dialog.getWindow();
-                    if (window == null) {
-                        Log.d(TAG, "Erreur windows null");
-                        return false;
-                    }
+                VersionDialog dialog = new VersionDialog(getActivity());
+                displayDialog(dialog);
 
-                    window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                    dialog.show();
-                    window.setGravity(Gravity.BOTTOM);
-                    window.setLayout(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                    );
-
-                    return false;
-                }
+                return false;
             });
         }
+
+        Preference openSourcePreference = getPreferenceScreen().findPreference(getString(R.string.libraries_key));
+        if(openSourcePreference != null) {
+            openSourcePreference.setOnPreferenceClickListener(preference -> {
+
+                LibrariesDialog dialog = new LibrariesDialog(getActivity());
+                displayDialog(dialog);
+
+                return false;
+            });
+        }
+    }
+
+    private void displayDialog(Dialog dialog) {
+        Window window = dialog.getWindow();
+        if (window == null) {
+            Log.d(TAG, "Erreur windows null");
+            return;
+        }
+
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+        window.setGravity(Gravity.CENTER);
+        window.setLayout(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
     }
 
 
@@ -153,8 +193,6 @@ public class SettingsFragment  extends PreferenceFragmentCompat implements Prefe
                 ((DatePickerPreference) preference).setDefaultValue(chosenNumber);
                 ((DatePickerPreference) preference).setValue(chosenNumber);
             }
-
-
         }
 
         if(preference.getKey().equals(getString(R.string.amount_key))) {
@@ -167,8 +205,6 @@ public class SettingsFragment  extends PreferenceFragmentCompat implements Prefe
                 return false;
             }
         }
-
-
 
         savePreferences(preference.getKey(), (String) newValue);
 
@@ -304,7 +340,6 @@ public class SettingsFragment  extends PreferenceFragmentCompat implements Prefe
         });
         return pickerRange;
     }
-
 
     // This method to store the custom preferences changes
     private void savePreferences(String key, String value) {

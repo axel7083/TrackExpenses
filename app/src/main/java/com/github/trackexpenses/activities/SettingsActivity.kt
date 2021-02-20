@@ -1,7 +1,10 @@
 package com.github.trackexpenses.activities
 
+import android.app.Activity
+import android.app.ActivityManager
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.trackexpenses.R
@@ -9,6 +12,7 @@ import com.github.trackexpenses.fragments.SettingsFragment
 import com.github.trackexpenses.models.Settings
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_settings.*
+
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -20,7 +24,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        settings = Gson().fromJson(intent.getStringExtra("settings"),Settings::class.java)
+        settings = Gson().fromJson(intent.getStringExtra("settings"), Settings::class.java)
 
         settingsFragment = SettingsFragment(settings)
 
@@ -29,11 +33,16 @@ class SettingsActivity : AppCompatActivity() {
             .replace(R.id.settings_container, settingsFragment)
             .commit()
 
-        Toast.makeText(this,"WORK IN PROGRESS",Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "WORK IN PROGRESS", Toast.LENGTH_SHORT).show()
 
         back_settings.setOnClickListener {
             finishActivity()
         }
+    }
+
+    fun resetApplication() {
+        Log.d(TAG, "resetApplication")
+        (getSystemService(ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
     }
 
     private fun finishActivity() {
@@ -46,5 +55,9 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         finishActivity()
+    }
+
+    companion object {
+        const val TAG: String = "SettingsActivity"
     }
 }

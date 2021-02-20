@@ -23,6 +23,12 @@
             app:iconSpaceReserved="false"
             app:title="Change the end date"/>
 
+        <Preference
+            app:key="@string/reset_key"
+            app:iconSpaceReserved="false"
+            app:summary="Delete and reset all application content"
+            app:title="Reset"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -35,7 +41,7 @@
             app:title="About TrackExpenses"/>
 
         <Preference
-            app:key="libraries"
+            app:key="@string/libraries_key"
             app:iconSpaceReserved="false"
             app:title="Open-source libraries"/>
 

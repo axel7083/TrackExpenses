@@ -36,4 +36,7 @@
     <string name="currency_key">currency</string>
     <string name="amount_key">amount</string>
     <string name="version_key">version</string>
+    <string name="reset_key">reset</string>
+    <string name="yes">Yes</string>
+    <string name="libraries_key">libraries</string>
 </resources>
