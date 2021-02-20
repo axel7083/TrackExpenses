@@ -23,6 +23,7 @@ public class TimeUtils {
     public static final String SQL_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String SIMPLE_PATTERN = "yyyy-MM-dd";
     public static final String TITLE_PATTERN = "EEE dd";
+    public static final String SHORT_PATTERN = "dd MMM yyyy";
 
     public static Calendar getFirstDayOfWeek(String timeZone) {
         int dayOfWeek = Instant.now().atZone(ZoneId.of(timeZone)).getDayOfWeek().getValue(); // FROM 1 to 7
@@ -96,6 +97,13 @@ public class TimeUtils {
         ZoneId zone = ZoneId.of(timezone);
         ZonedDateTime date_start = instant_start.atZone(zone);
         DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern(TITLE_PATTERN + (includedDetails?" MMM yyyy":""));
+        return date_start.format(formatter2);
+    }
+
+    public static String formatShort(Instant instant_start, String timezone) {
+        ZoneId zone = ZoneId.of(timezone);
+        ZonedDateTime date_start = instant_start.atZone(zone);
+        DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern(SHORT_PATTERN);
         return date_start.format(formatter2);
     }
 

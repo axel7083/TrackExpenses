@@ -1,0 +1,36 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        app:title="Sections to display in overview"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            app:key="@string/remaining_key"
+            app:iconSpaceReserved="false"
+            app:title="Total amount remaining"/>
+
+        <SwitchPreferenceCompat
+            app:key="@string/allowance_key"
+            app:iconSpaceReserved="false"
+            app:title="Next week allowance"/>
+
+        <SwitchPreferenceCompat
+            app:key="@string/spent_key"
+            app:iconSpaceReserved="false"
+            app:title="Total amount spent"/>
+
+        <SwitchPreferenceCompat
+            app:key="@string/period_key"
+            app:iconSpaceReserved="false"
+            app:title="Period dates"/>
+
+        <SwitchPreferenceCompat
+            app:key="@string/top_category_key"
+            app:iconSpaceReserved="false"
+            app:title="Most expensive category"/>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

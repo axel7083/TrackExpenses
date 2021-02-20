@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.util.Pair;
 
 import com.github.trackexpenses.models.Category;
 import com.github.trackexpenses.models.Expense;
@@ -15,6 +14,8 @@ import com.github.trackexpenses.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import kotlin.Pair;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 

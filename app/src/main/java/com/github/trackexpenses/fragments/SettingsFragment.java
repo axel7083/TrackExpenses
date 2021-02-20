@@ -1,5 +1,6 @@
 package com.github.trackexpenses.fragments;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
@@ -130,6 +131,17 @@ public class SettingsFragment  extends PreferenceFragmentCompat implements Prefe
             });
         }
 
+        /* overview settings */
+        Preference overview = findPreference(getString(R.string.overview_key));
+        if (overview != null) {
+            overview.setOnPreferenceClickListener(preference -> {
+                Activity activity = getActivity();
+                if(activity != null) {
+                    ((SettingsActivity) activity).displayOverviewSettings();
+                }
+                return false;
+            });
+        }
     }
 
     private void setupGeneralPreferences()  {

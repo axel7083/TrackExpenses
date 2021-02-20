@@ -2,13 +2,14 @@ package com.github.trackexpenses.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,15 +23,21 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.trackexpenses.R;
 import com.github.trackexpenses.activities.MainActivity;
+import com.github.trackexpenses.adapters.OverviewAdapter;
 import com.github.trackexpenses.adapters.WeekAdapter;
 import com.github.trackexpenses.models.Category;
+import com.github.trackexpenses.models.OverviewSettings;
 import com.github.trackexpenses.utils.CategoryUtils;
 import com.github.trackexpenses.utils.CustomBarChartRender;
+import com.github.trackexpenses.utils.TimeUtils;
 import com.google.gson.Gson;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
+
+import kotlin.Pair;
 
 
 public class StatsFragment extends Fragment implements WeekAdapter.ItemClickListener {
@@ -43,9 +50,12 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
     private ArrayList<Pair<Long, Double>> cat_expense;
     private BarChart barChart;
 
-    private RecyclerView weeks_overview;
+    private RecyclerView weeks_overview, overview_rv;
     private WeekAdapter adapter;
-    private TextView empty_graph_warning, total_remaining, next_allowance;
+    private TextView empty_graph_warning;
+    private CardView overview;
+
+    private OverviewAdapter overviewAdapter;
 
     public StatsFragment() {
         // Required empty public constructor
@@ -106,11 +116,11 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        overview = view.findViewById(R.id.overview);
         barChart = view.findViewById(R.id.category_chart);
         weeks_overview = view.findViewById(R.id.weeks_overview);
+        overview_rv = view.findViewById(R.id.overview_rv);
         empty_graph_warning = view.findViewById(R.id.empty_graph_warning);
-        total_remaining = view.findViewById(R.id.total_remaining);
-        next_allowance = view.findViewById(R.id.next_allowance);
 
         setupChart();
         setupRV();
@@ -122,23 +132,77 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
             Log.d(TAG, "setupOverView - Error getActivity NULL");
             return;
         }
-
         MainActivity main = ((MainActivity) getActivity());
 
+        OverviewSettings overviewSettings = main.getSettings().getOverviewSettings();
+        List<Pair<String, String>> mData = new ArrayList<>();
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.CEILING);
 
-        total_remaining.setText(main.currency + df.format(main.allowance.component1()));
+        /* Display remaining */
+        if(overviewSettings.isDisplayRemaining()) {
+            mData.add(new Pair<>(getString(R.string.remaining_title),main.currency + df.format(main.allowance.component1())));
+        }
 
-        double nextWeeAllowance = main.allowance.component2();
-        Log.d(TAG,"setupOverView - nextWeeAllowance " + nextWeeAllowance);
-        if(nextWeeAllowance == Double.MIN_VALUE) {
-            Log.d(TAG,"Displaying 'none'");
-            next_allowance.setText("None");
+        /* Display allowance */
+        if(overviewSettings.isDisplayNextWeekAllowance()) {
+            double nextWeeAllowance = main.allowance.component2();
+            Log.d(TAG,"setupOverView - nextWeeAllowance " + nextWeeAllowance);
+            String content;
+            if(nextWeeAllowance == Double.MIN_VALUE) {
+                Log.d(TAG,"Displaying 'none'");
+                content = "None";
+            }
+            else
+            {
+                content = main.currency + df.format(nextWeeAllowance);
+            }
+            mData.add(new Pair<>(getString(R.string.allowance_title),content));
+        }
+
+        /* Display spent */
+        if(overviewSettings.isDisplaySpent()) {
+            double content = main.settings.amount-main.allowance.component1();
+            mData.add(new Pair<>(getString(R.string.spent_title),main.currency + df.format(content)));
+        }
+
+        /* Display Top category */
+        if(overviewSettings.isDisplayTopCategory()) {
+
+            if(cat_expense != null && cat_expense.size() != 0)
+            {
+                Pair<Long, Double> max = cat_expense.get(0);
+                for(Pair<Long, Double> cat : cat_expense) {
+                    if(cat.getSecond() > max.getSecond()) {
+                        max = cat;
+                    }
+                }
+                Log.d(TAG,"max: " + max);
+                mData.add(new Pair<>(getString(R.string.top_category_title),CategoryUtils.getCategory(max.getFirst(),categories).getName()));
+            }
+        }
+
+        /* Display period dates*/
+        if(overviewSettings.isDisplayPeriod()) {
+            String start = TimeUtils.formatShort(TimeUtils.toCalendar(main.settings.startFormatted).toInstant(),"Europe/Paris");
+            String end = TimeUtils.formatShort(TimeUtils.toCalendar(main.settings.endFormatted).toInstant(),"Europe/Paris");
+            String content = start + " : " + end;
+            mData.add(new Pair<>(getString(R.string.period_title),content));
+        }
+
+        if(mData.size() == 0) {
+            overview.setVisibility(View.GONE);
         }
         else
         {
-            next_allowance.setText(main.currency + df.format(nextWeeAllowance));
+            overview.setVisibility(View.VISIBLE);
+            if(overviewAdapter == null)
+                overviewAdapter = new OverviewAdapter(getContext(),mData);
+            else
+                overviewAdapter.updateData(mData);
+
+            overview_rv.setAdapter(overviewAdapter);
+            overview_rv.setLayoutManager(new LinearLayoutManager(getContext()));
         }
 
     }
@@ -222,7 +286,7 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
             @Override
             public String getFormattedValue(float value) {
                 if((int) value < cat_expense.size() && (int) value >=0)
-                    return CategoryUtils.getCategory(cat_expense.get((int) value).first,categories).smiley;
+                    return CategoryUtils.getCategory(cat_expense.get((int) value).getFirst(),categories).smiley;
                 else
                     return "";
             }
@@ -235,7 +299,7 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
     private BarData createChartData() {
         ArrayList<BarEntry> values = new ArrayList<>();
         for (int i = 0; i < cat_expense.size(); i++) {
-            values.add(new BarEntry(i, cat_expense.get(i).second.floatValue()));
+            values.add(new BarEntry(i, cat_expense.get(i).getSecond().floatValue()));
         }
         BarDataSet set1 = new BarDataSet(values, "SET_LABEL");
 
@@ -259,4 +323,6 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
     public void onItemClick(View view, int position) {
         //TODO: do something with it
     }
+
+
 }

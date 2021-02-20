@@ -290,7 +290,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     }
 
-                    updateCurrentWeek(settings)
+                    updateCurrentWeek(settings, true)
                 }
                 else
                 {
@@ -300,7 +300,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             if(!this.settings.compareAmount(settings)) {
                 Log.d(TAG,"Amount updated")
-                updateCurrentWeek(settings)
+                updateCurrentWeek(settings, true)
             }
 
             if(!this.settings.compareCurrency(settings)) {
@@ -386,7 +386,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 //If nothing set for the current week
                 if(WeekUtils.getNow(weeks) == null) {
                     Log.d(TAG, "First expense of the week. Setup goal:")
-                    updateCurrentWeek(settings)
+                    updateCurrentWeek(settings, false)
                 }
 
                 db.addExpense(expense)
@@ -401,12 +401,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         statsFragment.refresh()
     }
 
-    private fun updateCurrentWeek(settings: Settings) {
+    private fun updateCurrentWeek(settings: Settings, skipNow: Boolean) {
         weeks = db.weeks
         val currentMonday = TimeUtils.formatSimple(
             TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(), "Europe/Paris"
         )
-        val nowAllowance = computeNowWeekAllowance(weeks, settings)
+        val nowAllowance = computeNowWeekAllowance(weeks, settings, skipNow)
         Log.d(TAG, "currentMonday: $currentMonday nowAllowance: $nowAllowance")
 
         db.updateWeek(currentMonday, nowAllowance)

@@ -13,8 +13,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Next allowance -->
+        <!-- Overview -->
         <androidx.cardview.widget.CardView
+            android:id="@+id/overview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="25dp"
@@ -24,64 +25,30 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginVertical="10dp"
-                android:layout_marginHorizontal="@dimen/side_margin"
+                android:paddingHorizontal="@dimen/side_margin"
+                android:paddingBottom="10dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:text="Overview"
-                    android:textSize="18dp"
+                    android:layout_marginTop="15dp"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
                     android:textColor="@color/arsenic"
+                    android:layout_marginBottom="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <LinearLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/overview_rv"
+                    tools:listitem="@layout/row_overview"
+                    tools:itemCount="3"
+                    android:nestedScrollingEnabled="false"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="5dp"
-                    android:gravity="center_vertical">
-                    <TextView
-                        android:text="Total Amount remaining"
-                        android:textSize="15dp"
-                        android:textColor="@color/grey"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:id="@+id/total_remaining"
-                        android:text="$580"
-                        android:textColor="@color/arsenic"
-                        android:textSize="22dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="5dp"
-                    android:gravity="center_vertical">
-                    <TextView
-                        android:text="Next Week allowance"
-                        android:textSize="15dp"
-                        android:textColor="@color/grey"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:id="@+id/next_allowance"
-                        android:text="$76"
-                        android:textColor="@color/arsenic"
-                        android:textSize="22dp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                </LinearLayout>
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:background="@android:color/transparent"/>
 
 
             </LinearLayout>

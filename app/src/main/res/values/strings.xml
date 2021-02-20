@@ -39,4 +39,15 @@
     <string name="reset_key">reset</string>
     <string name="yes">Yes</string>
     <string name="libraries_key">libraries</string>
+    <string name="remaining_key">remaining</string>
+    <string name="allowance_key">next_week_allowance</string>
+    <string name="spent_key">spent</string>
+    <string name="period_key">period</string>
+    <string name="top_category_key">top_category</string>
+    <string name="overview_key">overview</string>
+    <string name="remaining_title">Total Amount remaining</string>
+    <string name="allowance_title">Next Week allowance</string>
+    <string name="spent_title">Total Amount spent</string>
+    <string name="top_category_title">Most expensive category</string>
+    <string name="period_title">Period dates</string>
 </resources>

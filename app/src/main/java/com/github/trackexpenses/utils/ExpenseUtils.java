@@ -24,7 +24,7 @@ public class ExpenseUtils {
      * @return Pair remaining - weekly allowance
      */
     public static Pair<Double,Double> computeNextWeekAllowance(ArrayList<Week> weeks, Settings settings) {
-        double remaining = getRemaining(weeks, settings);
+        double remaining = getRemaining(weeks, settings, false);
         long weekLeft = getWeekLeft(settings.endFormatted);
         weekLeft--; //Remove current week
 
@@ -40,8 +40,8 @@ public class ExpenseUtils {
 
     }
 
-    public static double computeNowWeekAllowance(ArrayList<Week> weeks, Settings settings) {
-        double remaining = getRemaining(weeks, settings);
+    public static double computeNowWeekAllowance(ArrayList<Week> weeks, Settings settings, boolean skipNow) {
+        double remaining = getRemaining(weeks, settings, skipNow);
         long weekLeft = getWeekLeft(settings.endFormatted);
 
         Log.d(TAG,"weekLeft: " + weekLeft);
@@ -52,10 +52,20 @@ public class ExpenseUtils {
             return remaining;
     }
 
-    public static double getRemaining(ArrayList<Week> weeks, Settings settings) {
+    public static double getRemaining(ArrayList<Week> weeks, Settings settings, boolean skipNow) {
         double value = 0;
 
+        String mondayNow = TimeUtils.formatSimple(
+                TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(), "Europe/Paris"
+        );
+
+
         for(Week w : weeks) {
+
+            // If the expense are the current week does not count them
+            if(skipNow && w.getDate().equals(mondayNow))
+                continue;
+
             value+=w.spent;
         }
         return settings.amount-value;

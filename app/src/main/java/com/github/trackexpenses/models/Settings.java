@@ -11,6 +11,7 @@ public class Settings {
     public String startFormatted;
     public String endFormatted;
     public String version;
+    public OverviewSettings overviewSettings;
 
     @Override
     public boolean equals(Object o) {
@@ -21,7 +22,8 @@ public class Settings {
                 Objects.equals(currency, settings.currency) &&
                 Objects.equals(startFormatted, settings.startFormatted) &&
                 Objects.equals(endFormatted, settings.endFormatted) &&
-                Objects.equals(version, settings.version);
+                Objects.equals(version, settings.version) &&
+                Objects.equals(overviewSettings, settings.overviewSettings);
     }
 
     public boolean compareAmount(Object o) {
