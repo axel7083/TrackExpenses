@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.trackexpenses.IItems;
 import com.github.trackexpenses.R;
 import com.github.trackexpenses.activities.ExpenseActivity;
 import com.github.trackexpenses.activities.MainActivity;
@@ -48,7 +49,7 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
     private CardView card_info;
     private MultipleViewAdapter adapter;
 
-    private ArrayList<Object> items;
+    private ArrayList<IItems> items;
     private ArrayList<Category> categories;
 
     private Week now;
@@ -88,12 +89,17 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
         //fetch data
         ArrayList<Expense> weekly_expenses =  ((MainActivity) getActivity()).db.getCurrentWeekExpenses();
         categories =  ((MainActivity) getActivity()).db.getCategories();
-        items = TimeUtils.separateWithTitle(weekly_expenses);
+        items = TimeUtils.separateWithTitle(weekly_expenses,false);
         return true;
     }
 
     public void refresh() {
         Log.d(TAG,"refresh");
+        if (getView() == null) {
+            Log.d(TAG,"VIEW NULL");
+            return;
+        }
+
         boolean wasNul = false;
         if(now == null) {
             setupView();
@@ -106,8 +112,6 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
             }
 
             if(now == null) {
-                if (getView() == null)
-                    return;
                 setupView();
             }
             else

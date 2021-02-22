@@ -6,9 +6,11 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.trackexpenses.IItems;
 import com.github.trackexpenses.R;
 import com.github.trackexpenses.models.Category;
 import com.github.trackexpenses.models.Expense;
+import com.github.trackexpenses.models.Title;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +24,7 @@ import static com.github.trackexpenses.utils.CategoryUtils.getCategory;
 public class MultipleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // The items to display in your RecyclerView
-    private List<Object> items;
+    private List<IItems> items;
     private ArrayList<Category> categories;
     private String currency;
 
@@ -30,7 +32,7 @@ public class MultipleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private ExpenseViewHolder.ExpenseClickListener mClickListener;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MultipleViewAdapter(List<Object> items, ArrayList<Category> categories,String currency, ExpenseViewHolder.ExpenseClickListener mClickListener) {
+    public MultipleViewAdapter(List<IItems> items, ArrayList<Category> categories,String currency, ExpenseViewHolder.ExpenseClickListener mClickListener) {
         this.items = items;
         this.categories = categories;
         this.currency = currency;
@@ -48,7 +50,7 @@ public class MultipleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public int getItemViewType(int position) {
         if (items.get(position) instanceof Expense) {
             return EXPENSE;
-        } else if (items.get(position) instanceof String) {
+        } else if (items.get(position) instanceof Title) {
             return TITLE;
         }
         return -1;
@@ -126,7 +128,7 @@ public class MultipleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private void configureViewHolder2(TitleViewHolder vh2, int position) {
-        vh2.getTitle().setText((String) items.get(position));
+        vh2.getTitle().setText(((Title) items.get(position)).getTitle());
     }
 
 

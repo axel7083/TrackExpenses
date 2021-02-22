@@ -1,7 +1,9 @@
 package com.github.trackexpenses.utils;
 
+import com.github.trackexpenses.IItems;
 import com.github.trackexpenses.models.Expense;
 import com.github.trackexpenses.models.Settings;
+import com.github.trackexpenses.models.Title;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -49,13 +51,32 @@ public class TimeUtils {
     }
 
     public static Calendar getMonday(String date, String timeZone) {
-        Calendar cal = toCalendar(date);
+        return getMonday(date,timeZone,SQL_PATTERN);
+    }
+
+    public static Calendar getMonday(String date, String timeZone, String pattern) {
+        Calendar cal = toCalendar(date, pattern);
         int dayOfWeek = cal.toInstant().atZone(ZoneId.of(timeZone)).getDayOfWeek().getValue();
         cal.add(Calendar.DAY_OF_YEAR,-1*(dayOfWeek-1)); //Reset at monday
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
+        return cal;
+    }
+
+    public static Calendar getSunday(String date, String timeZone) {
+        return getSunday(date,timeZone,SQL_PATTERN);
+    }
+
+    public static Calendar getSunday(String date, String timeZone, String pattern) {
+        Calendar cal = toCalendar(date, pattern);
+        int dayOfWeek = cal.toInstant().atZone(ZoneId.of(timeZone)).getDayOfWeek().getValue();
+        cal.add(Calendar.DAY_OF_YEAR,-1*(dayOfWeek-1) + 6); //Reset at sunday
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
         return cal;
     }
 
@@ -157,21 +178,23 @@ public class TimeUtils {
         return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
     }
 
-    public static ArrayList<Object> separateWithTitle(ArrayList<Expense> expenses) {
-        ArrayList<Object> items = new ArrayList<>();
+    public static ArrayList<IItems> separateWithTitle(ArrayList<Expense> expenses, boolean includeDetails) {
+        ArrayList<IItems> items = new ArrayList<>();
 
         if(expenses.isEmpty())
             return null;
 
         Calendar date = toCalendar(expenses.get(0).getDate());
-        items.add(formatTitle(date.toInstant(),"Europe/Paris",false));
+        items.add(new Title(formatTitle(date.toInstant(),"Europe/Paris",includeDetails)));
         items.add(expenses.get(0));
 
         for(int i = 1 ; i  < expenses.size(); i++) {
             Calendar newCalendar = toCalendar(expenses.get(i).getDate());
-            if(newCalendar.getTime().getDay() != date.getTime().getDay()) {
+
+            if(newCalendar.get(Calendar.DAY_OF_WEEK) != date.get(Calendar.DAY_OF_WEEK))
+            {
                 date = newCalendar;
-                items.add(formatTitle(date.toInstant(),"Europe/Paris",false));
+                items.add(new Title(formatTitle(date.toInstant(),"Europe/Paris",includeDetails)));
             }
             items.add(expenses.get(i));
         }

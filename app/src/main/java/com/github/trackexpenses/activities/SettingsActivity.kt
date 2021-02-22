@@ -63,6 +63,7 @@ class SettingsActivity : AppCompatActivity(), OverviewSettingsFragment.OverviewC
     }
 
     override fun onBackPressed() {
+        //If we are in a subcategory of settings we display main
         if(!isDefault)
             displayDefaultSettings()
         else

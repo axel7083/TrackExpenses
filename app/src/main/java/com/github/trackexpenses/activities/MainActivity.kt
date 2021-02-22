@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.trackexpenses.DatabaseHelper
+import com.github.trackexpenses.IItems
 import com.github.trackexpenses.R
 import com.github.trackexpenses.fragments.HomeFragment
 import com.github.trackexpenses.fragments.StatsFragment
@@ -24,6 +25,7 @@ import com.github.trackexpenses.utils.WeekUtils
 import com.github.trackexpenses.utils.WeekUtils.getMissingWeeks
 import com.github.trackexpenses.utils.WeekUtils.getRemovedWeeks
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -49,6 +51,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate")
+
         setContentView(R.layout.activity_main)
         db = DatabaseHelper(this)
         if(db.categories.size == 0)
@@ -60,47 +64,39 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             startActivityForResult(intent, INTRO_ACTIVITY)
             return
         }
-        /*else
-        {
-            val period = settings!!.startFormatted + " -> " + settings!!.endFormatted;
-            Log.d(TAG, "PERIOD: $period")
-            Toast.makeText(this, period, Toast.LENGTH_LONG).show()
 
-           // showAlertDialog("Debugging", "Debug purpose only", "Debug")
-           //val weeks = db.weeks
-        }*/
+        checkPeriod(true)
+    }
 
-
-
-
-        /*Log.d(TAG, "DEBUG")
-        val ws = db.allWeeks
-        for(w in ws) {
-            Log.d(TAG, "${w.ID} - ${w.date} - ${w.goal}")
-        }*/
-
-        Log.d(TAG, "onCreate")
-
-
+    private fun checkPeriod(shouldSetup: Boolean) {
         when {
             isEnded(settings) -> {
+                hideAlertDialog()
                 // If now out of time => finish purpose
                 showAlertDialog("Done",
                     getString(R.string.end_alert_content) ,
                     getString(R.string.dismiss))
                 cv_main_add.visibility = View.GONE
                 bottom_bar.visibility = View.GONE
-                setup(true)
+                if(shouldSetup)
+                    setup(true)
             }
             !isStarted(settings) -> {
                 showAlertDialog("Not started yet.",
                     getString(R.string.start_alert_content) + TimeUtils.formatTitle(TimeUtils.toCalendar(settings.startFormatted).toInstant(),"Europe/Paris",true),
                     getString(R.string.dismiss))
+                if(shouldSetup)
+                    setup(false)
+
                 cv_main_add.visibility = View.GONE
                 bottom_bar.visibility = View.GONE
             }
             else -> {
-                setup(false)
+                hideAlertDialog()
+                if(shouldSetup)
+                    setup(false)
+                cv_main_add.visibility = View.VISIBLE
+                bottom_bar.visibility = View.VISIBLE
             }
         }
     }
@@ -159,7 +155,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private var isStats = true
-    private fun switchFragment(isStats: Boolean) {
+    fun switchFragment(isStats: Boolean) {
 
         this.isStats = isStats
 
@@ -226,12 +222,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d(TAG, "onActivityResult")
+        Log.d(TAG, "onActivityResult $requestCode RESULT_CANCELED: $RESULT_CANCELED RESULT_OK: $RESULT_OK resultCode: $resultCode")
         when(requestCode) {
             EXPENSE_ACTIVITY -> {
                 if (resultCode == RESULT_CANCELED || data == null)
                     return
-                handleExpenseActivityResult(data)
+                handleExpenseActivityResult(data, true)
             }
             INTRO_ACTIVITY -> {
                 if (resultCode == RESULT_CANCELED || data == null) {
@@ -245,6 +241,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     return
                 }
                 handleSettingActivityResult(data)
+            }
+            HISTORY_ACTIVITY -> {
+                if (resultCode == RESULT_CANCELED || data == null) {
+                    return
+                }
+                handleHistoryActivityResult(data)
             }
             else -> {
                 Log.d(TAG, "Unknown activity requestCode")
@@ -310,6 +312,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             this.settings = settings
             saveData()
 
+            checkPeriod(false)
             getDataFromDB(true)
             homeFragment.refresh()
             statsFragment.refresh()
@@ -322,7 +325,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         settings = Gson().fromJson(data.getStringExtra("settings"), Settings::class.java)
         if(settings != null) {
             Log.d(TAG, settings.toString())
-            setup(false)
+            checkPeriod(true)
 
             //creating all weeks to database
             val weeks = WeekUtils.createWeeks(settings)
@@ -342,7 +345,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun handleExpenseActivityResult(data: Intent) {
+    private fun handleExpenseActivityResult(data: Intent, shouldUpdate: Boolean) {
         Log.d(TAG, "handleExpenseActivityResult")
 
         if(data.getBooleanExtra("delete", false)) {
@@ -390,15 +393,31 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
 
                 db.addExpense(expense)
+
+                // If the user add an expense to a previous week
+                if(TimeUtils.toCalendar(expense.Date).before(TimeUtils.getFirstDayOfWeek("Europe/Paris"))) {
+                    Log.d(TAG,"Expense from previous week added to db, recomputing current week")
+                    updateCurrentWeek(settings, true)
+                }
             }
             else
             {
                 db.updateExpense(expense)
             }
         }
-        getDataFromDB(true)
-        homeFragment.refresh()
-        statsFragment.refresh()
+
+        if(shouldUpdate) {
+            getDataFromDB(true)
+            homeFragment.refresh()
+            statsFragment.refresh()
+        }
+    }
+
+    private fun handleHistoryActivityResult(data: Intent) {
+
+        Log.d(TAG,"handleHistoryActivityResult")
+
+
     }
 
     private fun updateCurrentWeek(settings: Settings, skipNow: Boolean) {
@@ -426,6 +445,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         const val EXPENSE_ACTIVITY: Int = 1
         const val INTRO_ACTIVITY: Int = 2
         const val SETTINGS_ACTIVITY: Int = 3
+        const val HISTORY_ACTIVITY: Int = 4
         const val TAG: String = "MainActivity"
     }
 }

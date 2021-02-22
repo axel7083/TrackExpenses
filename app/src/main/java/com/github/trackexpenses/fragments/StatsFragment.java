@@ -1,5 +1,7 @@
 package com.github.trackexpenses.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,12 +23,17 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
+import com.github.trackexpenses.IItems;
 import com.github.trackexpenses.R;
+import com.github.trackexpenses.activities.ExpenseActivity;
+import com.github.trackexpenses.activities.HistoryActivity;
 import com.github.trackexpenses.activities.MainActivity;
 import com.github.trackexpenses.adapters.OverviewAdapter;
 import com.github.trackexpenses.adapters.WeekAdapter;
 import com.github.trackexpenses.models.Category;
+import com.github.trackexpenses.models.Expense;
 import com.github.trackexpenses.models.OverviewSettings;
+import com.github.trackexpenses.models.Week;
 import com.github.trackexpenses.utils.CategoryUtils;
 import com.github.trackexpenses.utils.CustomBarChartRender;
 import com.github.trackexpenses.utils.TimeUtils;
@@ -35,6 +42,7 @@ import com.google.gson.Gson;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import kotlin.Pair;
@@ -321,7 +329,44 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
 
     @Override
     public void onItemClick(View view, int position) {
-        //TODO: do something with it
+        Log.d(TAG,"onItemClick pos: " + position);
+
+        MainActivity main = (MainActivity) getActivity();
+        if(main == null)
+        {
+            Log.d(TAG,"Activity NULL");
+            return;
+        }
+
+        if(position == 0) {
+            Log.d(TAG,"Clicked on CURRENT WEEK");
+            main.switchFragment(false);
+            return;
+        }
+
+        Week week = main.weeks.get(position);
+        Log.d(TAG,"Clicked " + week.getDate());
+
+        Calendar monday = TimeUtils.toCalendar(week.getDate(),TimeUtils.SIMPLE_PATTERN);
+        monday.set(Calendar.HOUR,0);
+        monday.set(Calendar.MINUTE,0);
+        monday.set(Calendar.SECOND,0);
+        monday.set(Calendar.MILLISECOND,0);
+
+        Calendar sunday = TimeUtils.getSunday(week.getDate(),"Europe/Paris", TimeUtils.SIMPLE_PATTERN);
+
+        Log.d(TAG,"Monday " + monday.getTime().toString() + " sunday " + sunday.getTime().toString());
+
+        ArrayList<IItems> items = TimeUtils.separateWithTitle(main.db.getExpenses(monday,sunday), true);
+
+        Intent intent = new Intent(main, HistoryActivity.class);
+        intent.putExtra("categories", new Gson().toJson(categories));
+        intent.putExtra("items", new Gson().toJson(items));
+        intent.putExtra("settings", new Gson().toJson(main.getSettings()));
+        intent.putExtra("week", TimeUtils.formatTitle(monday.toInstant(),"Europe/Paris",true));
+
+        main.startActivityForResult(intent, 4);
+
     }
 
 
