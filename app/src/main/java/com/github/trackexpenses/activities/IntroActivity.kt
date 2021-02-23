@@ -78,7 +78,7 @@ class IntroActivity : AppCompatActivity() {
 
                         val returnIntent = Intent()
 
-                        val setting: Settings = Settings()
+                        val setting = Settings()
                         for (i in 1..3) {
                             when(i) {
                                 1 -> {
@@ -134,11 +134,9 @@ class IntroActivity : AppCompatActivity() {
     }
 
     private fun changeStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val window = window
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.statusBarColor = Color.TRANSPARENT
-        }
+        val window = window
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.statusBarColor = Color.TRANSPARENT
     }
 
     var backCount: Long = 0

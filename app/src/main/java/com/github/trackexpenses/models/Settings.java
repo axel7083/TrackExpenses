@@ -13,6 +13,10 @@ public class Settings {
     public String version;
     public OverviewSettings overviewSettings;
 
+    public Settings() {
+        overviewSettings = new OverviewSettings();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
