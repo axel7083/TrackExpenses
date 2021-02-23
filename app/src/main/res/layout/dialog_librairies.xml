@@ -20,6 +20,7 @@
    <androidx.recyclerview.widget.RecyclerView
        android:id="@+id/rv_libraries"
        tools:listitem="@layout/row_library"
+       android:overScrollMode="never"
        android:layout_width="match_parent"
        android:layout_height="wrap_content"/>
 

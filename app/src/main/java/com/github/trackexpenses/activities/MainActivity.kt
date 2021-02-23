@@ -326,26 +326,19 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     private fun handleIntroActivityResult(data: Intent) {
 
         settings = Gson().fromJson(data.getStringExtra("settings"), Settings::class.java)
-        if(settings != null) {
-            Log.d(TAG, settings.toString())
-            checkPeriod(true)
+        Log.d(TAG, settings.toString())
+        checkPeriod(true)
 
-            //creating all weeks to database
-            val weeks = WeekUtils.createWeeks(settings)
-            if (weeks != null) {
-                Log.d(TAG, "getMissingWeeks COUNT: " + weeks.size)
-                for (w in weeks)
-                    db.addWeek(w)
-            }
+        //creating all weeks to database
+        val weeks = WeekUtils.createWeeks(settings)
+        if (weeks != null) {
+            Log.d(TAG, "getMissingWeeks COUNT: " + weeks.size)
+            for (w in weeks)
+                db.addWeek(w)
+        }
 
-            currency = settings.currency
-            saveData()
-        }
-        else
-        {
-            Toast.makeText(this, "Error not settings received", Toast.LENGTH_LONG).show()
-            finish()
-        }
+        currency = settings.currency
+        saveData()
     }
 
     private fun handleHistoryActivityResult() {

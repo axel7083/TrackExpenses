@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.github.trackexpenses.R
-import com.github.trackexpenses.databinding.ActivityMainBinding
 import com.github.trackexpenses.databinding.ActivitySettingsBinding
 import com.github.trackexpenses.fragments.OverviewSettingsFragment
 import com.github.trackexpenses.fragments.SettingsFragment
