@@ -4,6 +4,8 @@ You can select a period of time and an amount of money, then the app will give y
 
 The weekly allowance will vary depending on your expenses, if you spend more that what is recommanded in a week, you will reduce the allowance of the following weeks, and it is equivalent for spending less, you will increase the weeks left allowances.
 
+See screenshots [Here](https://github.com/axel7083/TrackExpenses/tree/main/Docs) 
+
 ### TODO:
 
 ## Settings page
