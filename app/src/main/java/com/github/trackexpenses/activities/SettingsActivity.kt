@@ -6,15 +6,19 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.github.trackexpenses.R
+import com.github.trackexpenses.databinding.ActivityMainBinding
+import com.github.trackexpenses.databinding.ActivitySettingsBinding
 import com.github.trackexpenses.fragments.OverviewSettingsFragment
 import com.github.trackexpenses.fragments.SettingsFragment
 import com.github.trackexpenses.models.OverviewSettings
 import com.github.trackexpenses.models.Settings
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_settings.*
 
 
 class SettingsActivity : AppCompatActivity(), OverviewSettingsFragment.OverviewCallback {
+
+    private lateinit var binding: ActivitySettingsBinding
+
 
     private lateinit var settings: Settings
     private lateinit var settingsFragment: SettingsFragment
@@ -24,7 +28,9 @@ class SettingsActivity : AppCompatActivity(), OverviewSettingsFragment.OverviewC
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
 
         settings = Gson().fromJson(intent.getStringExtra("settings"), Settings::class.java)
 
@@ -33,7 +39,7 @@ class SettingsActivity : AppCompatActivity(), OverviewSettingsFragment.OverviewC
 
         displayDefaultSettings()
 
-        back_settings.setOnClickListener {
+        binding.backSettings.setOnClickListener {
             onBackPressed()
         }
     }

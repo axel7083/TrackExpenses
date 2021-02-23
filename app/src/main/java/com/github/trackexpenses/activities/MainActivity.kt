@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.trackexpenses.DatabaseHelper
 import com.github.trackexpenses.R
+import com.github.trackexpenses.databinding.ActivityHistoryBinding
+import com.github.trackexpenses.databinding.ActivityMainBinding
 import com.github.trackexpenses.fragments.HomeFragment
 import com.github.trackexpenses.fragments.StatsFragment
 import com.github.trackexpenses.models.Settings
@@ -21,11 +23,11 @@ import com.github.trackexpenses.utils.TimeUtils.isStarted
 import com.github.trackexpenses.utils.WeekUtils
 import com.github.trackexpenses.utils.WeekUtils.*
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.activity_main.*
 
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
+    private lateinit var binding: ActivityMainBinding
 
     // SQLite Database
     lateinit var db: DatabaseHelper
@@ -47,8 +49,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate")
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        setContentView(R.layout.activity_main)
         db = DatabaseHelper(this)
         if(db.categories.size == 0)
             db.loadDefault(this)
@@ -71,8 +74,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 showAlertDialog("Done",
                     getString(R.string.end_alert_content) ,
                     getString(R.string.dismiss))
-                cv_main_add.visibility = View.GONE
-                bottom_bar.visibility = View.GONE
+                binding.cvMainAdd.visibility = View.GONE
+                binding.bottomBar.visibility = View.GONE
                 if(shouldSetup)
                     setup(true)
             }
@@ -83,15 +86,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 if(shouldSetup)
                     setup(false)
 
-                cv_main_add.visibility = View.GONE
-                bottom_bar.visibility = View.GONE
+                binding.cvMainAdd.visibility = View.GONE
+                binding.bottomBar.visibility = View.GONE
             }
             else -> {
                 hideAlertDialog()
                 if(shouldSetup)
                     setup(false)
-                cv_main_add.visibility = View.VISIBLE
-                bottom_bar.visibility = View.VISIBLE
+                binding.cvMainAdd.visibility = View.VISIBLE
+                binding.bottomBar.visibility = View.VISIBLE
             }
         }
     }
@@ -138,10 +141,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setupViews() {
         Log.d(TAG, "setupViews")
-        home.setOnClickListener(this)
-        stats.setOnClickListener(this)
-        plus_main.setOnClickListener(this)
-        settings_btn.setOnClickListener(this)
+        binding.home.setOnClickListener(this)
+        binding.stats.setOnClickListener(this)
+        binding.plusMain.setOnClickListener(this)
+        binding.settingsBtn.setOnClickListener(this)
     }
 
     private fun createFragments() {
@@ -160,12 +163,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val fragment: Fragment
         if (this.isStats) {
             fragment = statsFragment
-            home.setTextColor(getColor(R.color.grey))
-            stats.setTextColor(getColor(R.color.blue))
+            binding.home.setTextColor(getColor(R.color.grey))
+            binding.stats.setTextColor(getColor(R.color.blue))
         } else {
             fragment = homeFragment
-            home.setTextColor(getColor(R.color.blue))
-            stats.setTextColor(getColor(R.color.grey))
+            binding.home.setTextColor(getColor(R.color.blue))
+            binding.stats.setTextColor(getColor(R.color.grey))
         }
         fragmentTransaction.replace(R.id.contentFrame, fragment)
         fragmentTransaction.addToBackStack(null)
@@ -192,15 +195,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun showAlertDialog(title: String, content: String, action: String) {
-        alert.visibility = View.VISIBLE
-        alertTitle.text = title
-        alertContent.text = content
-        alertAction.text = action
-        alertAction.setOnClickListener(this)
+        binding.alert.visibility = View.VISIBLE
+        binding.alertTitle.text = title
+        binding.alertContent.text = content
+        binding.alertAction.text = action
+        binding.alertAction.setOnClickListener(this)
     }
 
     private fun hideAlertDialog() {
-        alert.visibility = View.GONE
+        binding.alert.visibility = View.GONE
     }
 
     private fun openSettings() {

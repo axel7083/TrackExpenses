@@ -11,18 +11,19 @@ import com.github.trackexpenses.IItems
 import com.github.trackexpenses.R
 import com.github.trackexpenses.adapters.ExpenseViewHolder
 import com.github.trackexpenses.adapters.MultipleViewAdapter
+import com.github.trackexpenses.databinding.ActivityExpenseBinding
+import com.github.trackexpenses.databinding.ActivityHistoryBinding
 import com.github.trackexpenses.models.*
 import com.github.trackexpenses.utils.ActivityResultUtils
 import com.github.trackexpenses.utils.TimeUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_history.*
 import java.util.*
 
 
 class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListener {
 
-
+    private lateinit var binding: ActivityHistoryBinding
     private lateinit var adapter: MultipleViewAdapter
     private lateinit var items: ArrayList<IItems>
     private lateinit var categories: ArrayList<Category>
@@ -36,7 +37,8 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_history)
+        binding = ActivityHistoryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         db = DatabaseHelper(this)
 
@@ -69,10 +71,10 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
 
         adapter =
             MultipleViewAdapter(items, categories, settings.currency, this)
-        history_rv.adapter = adapter
-        history_rv.layoutManager = LinearLayoutManager(this)
+        binding.historyRv.adapter = adapter
+        binding.historyRv.layoutManager = LinearLayoutManager(this)
 
-        back_history.setOnClickListener { onBackPressed() }
+        binding.backHistory.setOnClickListener { onBackPressed() }
     }
 
     private fun loadItem() {

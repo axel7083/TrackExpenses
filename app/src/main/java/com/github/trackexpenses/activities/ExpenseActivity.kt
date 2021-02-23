@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.trackexpenses.R
+import com.github.trackexpenses.databinding.ActivityExpenseBinding
 import com.github.trackexpenses.dialogs.CategoriesDialog
 import com.github.trackexpenses.models.Category
 import com.github.trackexpenses.models.Expense
@@ -24,13 +25,14 @@ import com.google.android.material.datepicker.CalendarConstraints.DateValidator
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.activity_expense.*
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
 
 
 class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDialog.Callback {
+
+    private lateinit var binding: ActivityExpenseBinding
 
     private lateinit var categories: ArrayList<Category>
 
@@ -40,7 +42,9 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_expense)
+        binding = ActivityExpenseBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
 
         categories = Gson().fromJson(
             intent.getStringExtra("categories"),
@@ -51,7 +55,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
             intent.getStringExtra("settings"), Settings::class.java
         )
 
-        currency_name.text = when(settings.currency) {
+        binding.currencyName.text = when(settings.currency) {
             getString(R.string.euro_sign) -> "Euro"
             getString(R.string.dollar_sign) -> "Dollar"
             getString(R.string.mark_sign) -> "Mark"
@@ -61,23 +65,23 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
         val expJson = intent.getStringExtra("expense")
         if(expJson != null) {
             //Restore states
-            delete_layout.visibility = View.VISIBLE
+            binding.deleteLayout.visibility = View.VISIBLE
 
-            title_activity_expense.text = getString(R.string.expense_edit)
+            binding.titleActivityExpense.text = getString(R.string.expense_edit)
             expense = Gson().fromJson(expJson, Expense::class.java)
             Log.d(TAG, "Editing expense " + expense.ID + " category ID: " + expense.Category)
-            expense_title.setText(expense.Title)
-            expense_value.setText(expense.Value.toString())
+            binding.expenseTitle.setText(expense.Title)
+            binding.expenseValue.setText(expense.Value.toString())
 
             category = CategoryUtils.getCategory(expense.Category.toString(), categories)
-            date_display.text = TimeUtils.formatTitle(
+            binding.dateDisplay.text = TimeUtils.formatTitle(
                 TimeUtils.toCalendar(expense.Date).toInstant(), "Europe/Paris", true
             )
         }
         else
         {
-            delete_layout.visibility = View.GONE
-            title_activity_expense.text = getString(R.string.expense_title)
+            binding.deleteLayout.visibility = View.GONE
+            binding.titleActivityExpense.text = getString(R.string.expense_title)
             //Default one
             category = categories[0]
             expense = Expense()
@@ -91,19 +95,19 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
 
     private fun setupViews() {
         //Navigation button
-        btn_cancel.setOnClickListener(this)
-        btn_save.setOnClickListener(this)
+        binding.btnCancel.setOnClickListener(this)
+        binding.btnSave.setOnClickListener(this)
 
-        calendar_input.setOnClickListener(this)
-        back_expense.setOnClickListener(this)
-        delete_layout.setOnClickListener(this)
+        binding.calendarInput.setOnClickListener(this)
+        binding.backExpense.setOnClickListener(this)
+        binding.deleteLayout.setOnClickListener(this)
 
         //Setup category
-        category_input.setOnClickListener(this)
-        category_display.text = category.name
-        category_display_smiley.setText(category.smiley)
+        binding.categoryInput.setOnClickListener(this)
+        binding.categoryDisplay.text = category.name
+        binding.categoryDisplaySmiley.setText(category.smiley)
 
-        delete.setOnClickListener(this)
+        binding.delete.setOnClickListener(this)
     }
 
     override fun onClick(p0: View?) {
@@ -174,7 +178,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
             cal.timeInMillis = pickerRange.selection!!
 
             expense.Date = (TimeUtils.formatSQL(cal.toInstant(), "Europe/Paris"))
-            date_display.text = TimeUtils.formatTitle(cal.toInstant(), "Europe/Paris", true)
+            binding.dateDisplay.text = TimeUtils.formatTitle(cal.toInstant(), "Europe/Paris", true)
         }
 
         pickerRange.show(supportFragmentManager,"0")
@@ -199,7 +203,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
     private fun checkValues(): Boolean {
 
         // Check title
-        expense.Title = expense_title.text.toString()
+        expense.Title = binding.expenseTitle.text.toString()
         if(expense.Title.length < 3) {
             Toast.makeText(this, "Label too short", Toast.LENGTH_SHORT).show()
             return false
@@ -207,7 +211,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
 
         // Check value
         try {
-            expense.Value = expense_value.text.toString().toDouble()
+            expense.Value = binding.expenseValue.text.toString().toDouble()
         }
         catch (e: NumberFormatException)
         {
@@ -221,9 +225,9 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
         }
 
         // Check category's smiley
-        if(category_display_smiley.text.length > 2) {
+        if(binding.categoryDisplaySmiley.text.length > 2) {
 
-            Log.d(TAG, "display_smiley: " + category_display_smiley.text.length)
+            Log.d(TAG, "display_smiley: " + binding.categoryDisplaySmiley.text.length)
 
             Toast.makeText(
                 this,
@@ -266,7 +270,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
             if(category.ID == null)
             {
                 //Save the smiley used
-                category.smiley = category_display_smiley.text.toString()
+                category.smiley = binding.categoryDisplaySmiley.text.toString()
                 returnIntent.putExtra("category", Gson().toJson(category))
             }
             else //If the category already exist
@@ -277,12 +281,12 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
                 //Maybe the smiley of the category change
                 Log.d(
                     TAG,
-                    "ORIGINAL: " + category.smiley + " current " + category_display_smiley.text
+                    "ORIGINAL: " + category.smiley + " current " + binding.categoryDisplaySmiley.text
                 )
-                if(!category.smiley.equals(category_display_smiley.text.toString()))
+                if(!category.smiley.equals(binding.categoryDisplaySmiley.text.toString()))
                 {
                     Log.d(TAG, "Smiley updated")
-                    category.smiley = category_display_smiley.text.toString()
+                    category.smiley = binding.categoryDisplaySmiley.text.toString()
                     returnIntent.putExtra("category", Gson().toJson(category))
                 }
             }
@@ -302,9 +306,9 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
      * **/
     override fun addCategory(category: Category) {
         Log.d(TAG, "addCategory")
-        category_display.text = category.name
-        category_display_smiley.setText("+")
-        category_display_smiley.focusable = View.FOCUSABLE
+        binding.categoryDisplay.text = category.name
+        binding.categoryDisplaySmiley.setText("+")
+        binding.categoryDisplaySmiley.focusable = View.FOCUSABLE
 
         this.category = (category)
     }
@@ -319,8 +323,8 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
             }
         }
 
-        category_display.text = category.name
-        category_display_smiley.setText(category.smiley)
+        binding.categoryDisplay.text = category.name
+        binding.categoryDisplaySmiley.setText(category.smiley)
 
         expense.Category = category.ID.toLong()
     }
