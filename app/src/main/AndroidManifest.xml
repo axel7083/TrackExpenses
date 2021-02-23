@@ -10,9 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.HistoryActivity" />
-        <activity
-            android:name=".activities.SettingsActivity"
-            android:label="@string/title_activity_settings" />
+        <activity android:name=".activities.SettingsActivity" />
         <activity android:name=".activities.IntroActivity" />
         <activity android:name=".activities.ExpenseActivity" />
         <activity android:name=".activities.MainActivity">

@@ -6,45 +6,41 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.trackexpenses.DatabaseHelper
 import com.github.trackexpenses.IItems
 import com.github.trackexpenses.R
 import com.github.trackexpenses.adapters.ExpenseViewHolder
 import com.github.trackexpenses.adapters.MultipleViewAdapter
-import com.github.trackexpenses.fragments.HomeFragment
-import com.github.trackexpenses.models.Category
-import com.github.trackexpenses.models.Expense
-import com.github.trackexpenses.models.ItemDeserializer
-import com.github.trackexpenses.models.Settings
+import com.github.trackexpenses.models.*
+import com.github.trackexpenses.utils.ActivityResultUtils
+import com.github.trackexpenses.utils.TimeUtils
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_history.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListener {
+
 
     private lateinit var adapter: MultipleViewAdapter
     private lateinit var items: ArrayList<IItems>
     private lateinit var categories: ArrayList<Category>
     private lateinit var settings: Settings
-    private lateinit var intents: ArrayList<Intent>
+
+    private lateinit var monday: Calendar
+    private lateinit var sunday: Calendar
+
+    // SQLite Database
+    lateinit var db: DatabaseHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
 
-        intents = ArrayList()
+        db = DatabaseHelper(this)
 
-        val gsonBuilder = GsonBuilder()
-        gsonBuilder.registerTypeHierarchyAdapter(IItems::class.java, ItemDeserializer())
-        val gson = gsonBuilder.create()
-
-        items = gson.fromJson(
-            intent.getStringExtra("items"),
-            object : TypeToken<List<IItems?>?>() {}.type
-        )
+        val week: Week = Gson().fromJson(intent.getStringExtra("week"), Week::class.java)
 
         categories = Gson().fromJson(
             intent.getStringExtra("categories"),
@@ -56,7 +52,20 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
             Settings::class.java
         )
 
-        title_history.text = intent.getStringExtra("week")
+        monday = TimeUtils.toCalendar(week.date, TimeUtils.SIMPLE_PATTERN)
+        monday[Calendar.HOUR] = 0
+        monday[Calendar.MINUTE] = 0
+        monday[Calendar.SECOND] = 0
+        monday[Calendar.MILLISECOND] = 0
+
+        sunday = TimeUtils.getSunday(week.date, "Europe/Paris", TimeUtils.SIMPLE_PATTERN)
+
+        Log.d(
+            TAG,
+            "Monday " + monday.time.toString() + " sunday " + sunday.time.toString()
+        )
+
+        loadItem()
 
         adapter =
             MultipleViewAdapter(items, categories, settings.currency, this)
@@ -66,22 +75,27 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
         back_history.setOnClickListener { onBackPressed() }
     }
 
-    override fun onBackPressed() {
-        //super.onBackPressed()
-        Log.d(TAG,"onBackPressed")
+    private fun loadItem() {
+        items = TimeUtils.separateWithTitle(db.getExpenses(monday, sunday), true)
+    }
 
-        //TODO: if modification occur update
-        val returnIntent = Intent()
-        if(intents.size != 0) {
-            returnIntent.putExtra("intents", Gson().toJson(intents))
-            setResult(RESULT_OK, returnIntent)
+    private fun refresh() {
+        adapter.items = (items)
+        adapter.notifyDataSetChanged()
+    }
+
+    var modified: Boolean = false
+    override fun onBackPressed() {
+
+        Log.d(TAG, "onBackPressed")
+        if(modified) {
+            setResult(RESULT_OK, null)
         }
         else
         {
-            setResult(RESULT_CANCELED, returnIntent)
+            setResult(RESULT_CANCELED, null)
         }
         finish()
-
     }
 
     override fun onItemClick(view: View?, position: Int) {
@@ -102,15 +116,15 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
                 return
             else
             {
-                Log.d(TAG,"Adding intent")
-                intents.add(data)
+                if( ActivityResultUtils.handleExpenseActivityResult(data, db, null, settings) ) {
+                    categories = db.categories
+                }
+                // Refreshing
+                loadItem()
+                refresh()
+                modified = true
+
             }
-        }
-    }
-
-    private fun extractAction(data: Intent) {
-        if (data.getBooleanExtra("delete", false)) {
-
         }
     }
 

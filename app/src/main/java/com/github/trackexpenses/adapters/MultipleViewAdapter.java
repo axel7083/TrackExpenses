@@ -24,8 +24,8 @@ import static com.github.trackexpenses.utils.CategoryUtils.getCategory;
 public class MultipleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // The items to display in your RecyclerView
-    private List<IItems> items;
-    private ArrayList<Category> categories;
+    public List<IItems> items;
+    public ArrayList<Category> categories;
     private String currency;
 
     private final int EXPENSE = 0, TITLE = 1;

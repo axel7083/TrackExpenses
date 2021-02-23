@@ -1,6 +1,5 @@
 package com.github.trackexpenses.activities
 
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -15,7 +14,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.github.trackexpenses.R
 import com.github.trackexpenses.dialogs.CategoriesDialog
-import com.github.trackexpenses.fragments.SettingsFragment
 import com.github.trackexpenses.models.Category
 import com.github.trackexpenses.models.Expense
 import com.github.trackexpenses.models.Settings
@@ -33,8 +31,6 @@ import java.util.*
 
 
 class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDialog.Callback {
-
-    private val TAG: String = "ExpenseActivity"
 
     private lateinit var categories: ArrayList<Category>
 
@@ -115,22 +111,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
             return;
 
         when (p0.id) {
-            R.id.calendar_input -> showCalendarDialog()/* {
-
-                val now: Calendar = Calendar.getInstance()
-                val dpd: MaterialDatePicker = DatePickerDialog.newInstance(
-                    this,
-                    now.get(Calendar.YEAR),  // Initial year selection
-                    now.get(Calendar.MONTH),  // Initial month selection
-                    now.get(Calendar.DAY_OF_MONTH) // Inital day selection
-                )
-                dpd.maxDate = calendar
-                dpd.minDate = TimeUtils.getMonday(settings.startFormatted,"Europe/Paris")
-                // If you're calling this from a support Fragment
-                // If you're calling this from a support Fragment
-                dpd.show(supportFragmentManager, "Datepickerdialog");
-
-            }*/
+            R.id.calendar_input -> showCalendarDialog()
             R.id.btn_cancel, R.id.back_expense -> finishActivity(false)
             R.id.category_input -> showCategoriesDialog()
             R.id.btn_save -> {
@@ -317,20 +298,6 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
     }
 
     /**
-     * Callback from DatePicker
-     * **/
-    /*override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        val output: Calendar = Calendar.getInstance()
-        output[Calendar.YEAR] = year
-        output[Calendar.DAY_OF_MONTH] = dayOfMonth
-        output[Calendar.MONTH] = monthOfYear
-        Log.d(TAG, "Calendar: " + output.time.toString())
-
-        expense.Date = (TimeUtils.formatSQL(output.toInstant(), "Europe/Paris"))
-        date_display.text = TimeUtils.formatTitle(output.toInstant(), "Europe/Paris", true)
-    }*/
-
-    /**
      * Callback from CategoriesDialog
      * **/
     override fun addCategory(category: Category) {
@@ -358,4 +325,7 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
         expense.Category = category.ID.toLong()
     }
 
+    companion object {
+        private const val TAG: String = "ExpenseActivity"
+    }
 }

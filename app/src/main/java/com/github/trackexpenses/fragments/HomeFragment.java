@@ -31,14 +31,13 @@ import com.google.gson.Gson;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static com.github.trackexpenses.utils.WeekUtils.getNow;
 
 
 public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseClickListener {
 
-    private static final String TAG = "FavoriteFragment";
+    private static final String TAG = "HomeFragment";
     private static final String ARG_PARAM1 = "ARG_PARAM1";
     private int arg;
 
@@ -97,6 +96,7 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
         Log.d(TAG,"refresh");
         if (getView() == null) {
             Log.d(TAG,"VIEW NULL");
+            fetchData();
             return;
         }
 
@@ -171,7 +171,7 @@ public class HomeFragment extends Fragment implements ExpenseViewHolder.ExpenseC
     }
 
     private void updateCardView() {
-
+        Log.d(TAG,"updateCardView");
         MainActivity main = (MainActivity) getActivity();
 
         DecimalFormat df = new DecimalFormat("#.##");

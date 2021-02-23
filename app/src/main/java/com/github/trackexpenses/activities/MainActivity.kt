@@ -8,24 +8,19 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.github.trackexpenses.DatabaseHelper
-import com.github.trackexpenses.IItems
 import com.github.trackexpenses.R
 import com.github.trackexpenses.fragments.HomeFragment
 import com.github.trackexpenses.fragments.StatsFragment
-import com.github.trackexpenses.models.Category
-import com.github.trackexpenses.models.Expense
 import com.github.trackexpenses.models.Settings
 import com.github.trackexpenses.models.Week
+import com.github.trackexpenses.utils.ActivityResultUtils
 import com.github.trackexpenses.utils.ExpenseUtils
-import com.github.trackexpenses.utils.ExpenseUtils.computeNowWeekAllowance
 import com.github.trackexpenses.utils.TimeUtils
 import com.github.trackexpenses.utils.TimeUtils.isEnded
 import com.github.trackexpenses.utils.TimeUtils.isStarted
 import com.github.trackexpenses.utils.WeekUtils
-import com.github.trackexpenses.utils.WeekUtils.getMissingWeeks
-import com.github.trackexpenses.utils.WeekUtils.getRemovedWeeks
+import com.github.trackexpenses.utils.WeekUtils.*
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -126,9 +121,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val mPrefs = getSharedPreferences("Default", MODE_PRIVATE)
         val gson = Gson()
         val json = mPrefs.getString("Settings", null) ?: return false
+
         settings = gson.fromJson(json, Settings::class.java)
         currency = settings.currency
-        return settings != null
+        return true
     }
 
     private fun saveData() {
@@ -227,7 +223,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             EXPENSE_ACTIVITY -> {
                 if (resultCode == RESULT_CANCELED || data == null)
                     return
-                handleExpenseActivityResult(data, true)
+                ActivityResultUtils.handleExpenseActivityResult(data, db, weeks, settings)
+                // Refreshing
+                getDataFromDB(true)
+                homeFragment.refresh()
+                statsFragment.refresh()
             }
             INTRO_ACTIVITY -> {
                 if (resultCode == RESULT_CANCELED || data == null) {
@@ -243,10 +243,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 handleSettingActivityResult(data)
             }
             HISTORY_ACTIVITY -> {
-                if (resultCode == RESULT_CANCELED || data == null) {
+                if (resultCode == RESULT_CANCELED) {
                     return
                 }
-                handleHistoryActivityResult(data)
+                handleHistoryActivityResult()
             }
             else -> {
                 Log.d(TAG, "Unknown activity requestCode")
@@ -292,7 +292,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         }
                     }
 
-                    updateCurrentWeek(settings, true)
+                    weeks = updateCurrentWeek(settings, true, db)
                 }
                 else
                 {
@@ -302,7 +302,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             if(!this.settings.compareAmount(settings)) {
                 Log.d(TAG,"Amount updated")
-                updateCurrentWeek(settings, true)
+                weeks = updateCurrentWeek(settings, true, db)
             }
 
             if(!this.settings.compareCurrency(settings)) {
@@ -345,90 +345,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun handleExpenseActivityResult(data: Intent, shouldUpdate: Boolean) {
-        Log.d(TAG, "handleExpenseActivityResult")
-
-        if(data.getBooleanExtra("delete", false)) {
-            val ID = data.getStringExtra("ID")
-
-            Log.d(TAG, "Deleting expense $ID")
-            db.deleteExpense(ID)
-        }
-        else
-        {
-            val catJson = data.getStringExtra("category")
-            val expense: Expense = Gson().fromJson(
-                data.getStringExtra("expense"),
-                Expense::class.java
-            )
-            Log.d(TAG, "New expense called ${expense.Title}")
-
-            if(catJson != null) {
-                Log.d(TAG, "New category added")
-                val newCat = Gson().fromJson(catJson, Category::class.java)
-
-                if(newCat.ID == null) {
-                    val id = db.addCategory(newCat)
-                    Log.d(TAG, "Saved in data base with id $id")
-                    expense.Category = id
-                }
-                else
-                {
-                    db.updateCategory(newCat)
-                    Log.d(TAG, "Category updated")
-                    expense.Category = newCat.ID.toLong()
-                }
-            }
-            else
-            {
-                Log.d(TAG, "Category ID: ${expense.Category}")
-            }
-
-            if(expense.ID == null) {
-
-                //If nothing set for the current week
-                if(WeekUtils.getNow(weeks) == null) {
-                    Log.d(TAG, "First expense of the week. Setup goal:")
-                    updateCurrentWeek(settings, false)
-                }
-
-                db.addExpense(expense)
-
-                // If the user add an expense to a previous week
-                if(TimeUtils.toCalendar(expense.Date).before(TimeUtils.getFirstDayOfWeek("Europe/Paris"))) {
-                    Log.d(TAG,"Expense from previous week added to db, recomputing current week")
-                    updateCurrentWeek(settings, true)
-                }
-            }
-            else
-            {
-                db.updateExpense(expense)
-            }
-        }
-
-        if(shouldUpdate) {
-            getDataFromDB(true)
-            homeFragment.refresh()
-            statsFragment.refresh()
-        }
-    }
-
-    private fun handleHistoryActivityResult(data: Intent) {
+    private fun handleHistoryActivityResult() {
 
         Log.d(TAG,"handleHistoryActivityResult")
 
-
-    }
-
-    private fun updateCurrentWeek(settings: Settings, skipNow: Boolean) {
-        weeks = db.weeks
-        val currentMonday = TimeUtils.formatSimple(
-            TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(), "Europe/Paris"
-        )
-        val nowAllowance = computeNowWeekAllowance(weeks, settings, skipNow)
-        Log.d(TAG, "currentMonday: $currentMonday nowAllowance: $nowAllowance")
-
-        db.updateWeek(currentMonday, nowAllowance)
+        getDataFromDB(true)
+        homeFragment.refresh()
+        statsFragment.refresh()
     }
 
     var backCount: Long = 0

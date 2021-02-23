@@ -1,13 +1,11 @@
 package com.github.trackexpenses.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -23,15 +21,12 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.trackexpenses.IItems;
 import com.github.trackexpenses.R;
-import com.github.trackexpenses.activities.ExpenseActivity;
 import com.github.trackexpenses.activities.HistoryActivity;
 import com.github.trackexpenses.activities.MainActivity;
 import com.github.trackexpenses.adapters.OverviewAdapter;
 import com.github.trackexpenses.adapters.WeekAdapter;
 import com.github.trackexpenses.models.Category;
-import com.github.trackexpenses.models.Expense;
 import com.github.trackexpenses.models.OverviewSettings;
 import com.github.trackexpenses.models.Week;
 import com.github.trackexpenses.utils.CategoryUtils;
@@ -42,7 +37,6 @@ import com.google.gson.Gson;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import kotlin.Pair;
@@ -50,7 +44,7 @@ import kotlin.Pair;
 
 public class StatsFragment extends Fragment implements WeekAdapter.ItemClickListener {
 
-    private static final String TAG = "FavoriteFragment";
+    private static final String TAG = "StatsFragment";
     private static final String ARG_PARAM1 = "ARG_PARAM1";
     private int arg;
 
@@ -345,9 +339,13 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
         }
 
         Week week = main.weeks.get(position);
+
+
         Log.d(TAG,"Clicked " + week.getDate());
 
-        Calendar monday = TimeUtils.toCalendar(week.getDate(),TimeUtils.SIMPLE_PATTERN);
+
+
+        /*Calendar monday = TimeUtils.toCalendar(week.getDate(),TimeUtils.SIMPLE_PATTERN);
         monday.set(Calendar.HOUR,0);
         monday.set(Calendar.MINUTE,0);
         monday.set(Calendar.SECOND,0);
@@ -363,7 +361,13 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
         intent.putExtra("categories", new Gson().toJson(categories));
         intent.putExtra("items", new Gson().toJson(items));
         intent.putExtra("settings", new Gson().toJson(main.getSettings()));
-        intent.putExtra("week", TimeUtils.formatTitle(monday.toInstant(),"Europe/Paris",true));
+        intent.putExtra("week", TimeUtils.formatTitle(monday.toInstant(),"Europe/Paris",true));*/
+
+        Intent intent = new Intent(main, HistoryActivity.class);
+
+        intent.putExtra("week", new Gson().toJson(week));
+        intent.putExtra("categories", new Gson().toJson(categories));
+        intent.putExtra("settings", new Gson().toJson(main.getSettings()));
 
         main.startActivityForResult(intent, 4);
 

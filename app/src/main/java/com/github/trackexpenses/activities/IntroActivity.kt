@@ -19,7 +19,6 @@ import com.github.trackexpenses.fragments.CurrencyPickerFragment
 import com.github.trackexpenses.fragments.DateRangeFragment
 import com.github.trackexpenses.models.Settings
 import com.github.trackexpenses.views.LockableViewPager
-import com.google.android.material.tabs.TabLayout
 import com.google.gson.Gson
 
 class IntroActivity : AppCompatActivity() {

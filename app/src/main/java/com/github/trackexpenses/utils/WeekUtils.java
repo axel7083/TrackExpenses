@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.github.trackexpenses.DatabaseHelper;
 import com.github.trackexpenses.models.Settings;
 import com.github.trackexpenses.models.Week;
 
@@ -11,6 +12,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import static com.github.trackexpenses.utils.ExpenseUtils.computeNowWeekAllowance;
 import static com.github.trackexpenses.utils.TimeUtils.formatSimple;
 import static com.github.trackexpenses.utils.TimeUtils.getFirstDayOfWeek;
 import static com.github.trackexpenses.utils.TimeUtils.getMonday;
@@ -19,8 +21,6 @@ import static com.github.trackexpenses.utils.TimeUtils.toCalendar;
 public class WeekUtils {
 
     private static final String TAG = "WeekUtils";
-
-
 
     public static ArrayList<Week> createWeeks(@Nullable Settings settings) {
         if(settings == null)
@@ -125,4 +125,28 @@ public class WeekUtils {
         }
         return weeks;
     }
+
+
+    public static ArrayList<Week> updateCurrentWeek(Settings settings, Boolean skipNow, DatabaseHelper db) {
+        ArrayList<Week> weeks = db.getWeeks();
+        String currentMonday = TimeUtils.formatSimple(
+                TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(), "Europe/Paris"
+        );
+        double nowAllowance = computeNowWeekAllowance(weeks, settings, skipNow);
+        Log.d(TAG, "currentMonday: $currentMonday nowAllowance: $nowAllowance");
+
+        db.updateWeek(currentMonday, nowAllowance);
+        return weeks;
+    }
+
+    /*private fun updateCurrentWeek(settings: Settings, skipNow: Boolean) {
+        weeks = db.weeks
+        val currentMonday = TimeUtils.formatSimple(
+                TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(), "Europe/Paris"
+        )
+        val nowAllowance = computeNowWeekAllowance(weeks, settings, skipNow)
+        Log.d(TAG, "currentMonday: $currentMonday nowAllowance: $nowAllowance")
+
+        db.updateWeek(currentMonday, nowAllowance)
+    }*/
 }
