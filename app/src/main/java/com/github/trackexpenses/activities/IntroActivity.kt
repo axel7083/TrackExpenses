@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.Toast
@@ -34,11 +35,18 @@ class IntroActivity : AppCompatActivity() {
             window.decorView.systemUiVisibility =
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         }*/
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false)
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.setDecorFitsSystemWindows(true)
         } else {
+
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        }
+        }*/
+        val w: Window = window
+        w.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+
         setContentView(R.layout.activity_intro)
 
         // bind views
@@ -68,44 +76,46 @@ class IntroActivity : AppCompatActivity() {
 
                 if (slide.canNext()) {
 
-                    if(viewPager.currentItem == adapter.count - 2) {
-                        (adapter.getItem(3) as AmountFragment).currency = (adapter.getItem(2) as CurrencyPickerFragment).currency
+                    if (viewPager.currentItem == adapter.count - 2) {
+                        (adapter.getItem(3) as AmountFragment).currency =
+                            (adapter.getItem(2) as CurrencyPickerFragment).currency
                         (adapter.getItem(3) as AmountFragment).refresh()
                     }
 
-                    if(viewPager.currentItem == adapter.count -1) {
-                        Toast.makeText(this,"Get started",Toast.LENGTH_SHORT).show()
+                    if (viewPager.currentItem == adapter.count - 1) {
+                        Toast.makeText(this, "Get started", Toast.LENGTH_SHORT).show()
 
                         val returnIntent = Intent()
 
                         val setting = Settings()
                         for (i in 1..3) {
-                            when(i) {
+                            when (i) {
                                 1 -> {
-                                    setting.startFormatted = (adapter.getItem(1) as DateRangeFragment).startFormatted
-                                    setting.endFormatted = (adapter.getItem(1) as DateRangeFragment).endFormatted
+                                    setting.startFormatted =
+                                        (adapter.getItem(1) as DateRangeFragment).startFormatted
+                                    setting.endFormatted =
+                                        (adapter.getItem(1) as DateRangeFragment).endFormatted
                                 }
-                                2-> setting.currency = (adapter.getItem(2) as CurrencyPickerFragment).currency
+                                2 -> setting.currency =
+                                    (adapter.getItem(2) as CurrencyPickerFragment).currency
                                 3 -> setting.amount = (adapter.getItem(3) as AmountFragment).amount
                             }
                         }
                         returnIntent.putExtra("settings", Gson().toJson(setting))
                         setResult(RESULT_OK, returnIntent)
                         finish()
-                    }
-                    else
-                    {
+                    } else {
                         viewPager.currentItem = viewPager.currentItem + 1
                     }
-                }
-                else
-                {
-                    Toast.makeText(this,
-                        when(viewPager.currentItem) {
+                } else {
+                    Toast.makeText(
+                        this,
+                        when (viewPager.currentItem) {
                             1 -> "Please select a valid period of time"
                             2 -> "Please select a currency"
-                            else-> "Please complete form" }
-                        ,Toast.LENGTH_SHORT).show()
+                            else -> "Please complete form"
+                        }, Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         })

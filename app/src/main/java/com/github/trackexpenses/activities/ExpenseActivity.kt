@@ -136,7 +136,13 @@ class ExpenseActivity : AppCompatActivity(), View.OnClickListener, CategoriesDia
             settings.startFormatted,
             "Europe/Paris"
         );
-        val now = TimeUtils.getNow()
+        var now = TimeUtils.getNow()
+
+        val endDate = TimeUtils.toCalendar(settings.endFormatted)
+        if(now.after(endDate)) {
+            now = endDate
+        }
+
         now[Calendar.HOUR_OF_DAY] = 23
         now[Calendar.MINUTE] = 59
         now[Calendar.SECOND] = 59

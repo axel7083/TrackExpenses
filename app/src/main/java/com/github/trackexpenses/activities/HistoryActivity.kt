@@ -25,7 +25,7 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
 
     private lateinit var binding: ActivityHistoryBinding
     private lateinit var adapter: MultipleViewAdapter
-    private lateinit var items: ArrayList<IItems>
+    private var items: ArrayList<IItems>? = null
     private lateinit var categories: ArrayList<Category>
     private lateinit var settings: Settings
 
@@ -79,9 +79,14 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
 
     private fun loadItem() {
         items = TimeUtils.separateWithTitle(db.getExpenses(monday, sunday), true)
+
+        if(items == null) {
+            onBackPressed()
+        }
     }
 
     private fun refresh() {
+        adapter.categories = categories
         adapter.items = (items)
         adapter.notifyDataSetChanged()
     }
@@ -101,10 +106,10 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
     }
 
     override fun onItemClick(view: View?, position: Int) {
-        Log.d(TAG, "Clicked " + (items[position] as Expense).Title)
+        Log.d(TAG, "Clicked " + (items!![position] as Expense).Title)
         val intent = Intent(this, ExpenseActivity::class.java)
         intent.putExtra("categories", Gson().toJson(categories))
-        intent.putExtra("expense", Gson().toJson(items[position]))
+        intent.putExtra("expense", Gson().toJson(items!![position]))
         intent.putExtra("settings", Gson().toJson(settings))
         startActivityForResult(intent, MainActivity.EXPENSE_ACTIVITY)
     }
@@ -121,10 +126,11 @@ class HistoryActivity : AppCompatActivity(), ExpenseViewHolder.ExpenseClickListe
                 if( ActivityResultUtils.handleExpenseActivityResult(data, db, null, settings) ) {
                     categories = db.categories
                 }
+                modified = true
+
                 // Refreshing
                 loadItem()
                 refresh()
-                modified = true
 
             }
         }

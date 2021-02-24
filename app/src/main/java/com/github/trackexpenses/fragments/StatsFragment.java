@@ -35,6 +35,7 @@ import com.github.trackexpenses.utils.TimeUtils;
 import com.google.gson.Gson;
 
 import java.math.RoundingMode;
+import java.sql.Time;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -332,7 +333,9 @@ public class StatsFragment extends Fragment implements WeekAdapter.ItemClickList
             return;
         }
 
-        if(position == 0) {
+
+        if(main.weeks.get(position).date.equals(TimeUtils.formatSimple(TimeUtils.getFirstDayOfWeek("Europe/Paris").toInstant(),"Europe/Paris")))
+        {
             Log.d(TAG,"Clicked on CURRENT WEEK");
             main.switchFragment(false);
             return;
