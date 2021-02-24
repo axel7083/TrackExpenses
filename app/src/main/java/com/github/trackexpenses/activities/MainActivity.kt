@@ -13,6 +13,7 @@ import com.github.trackexpenses.databinding.ActivityHistoryBinding
 import com.github.trackexpenses.databinding.ActivityMainBinding
 import com.github.trackexpenses.fragments.HomeFragment
 import com.github.trackexpenses.fragments.StatsFragment
+import com.github.trackexpenses.models.OverviewSettings
 import com.github.trackexpenses.models.Settings
 import com.github.trackexpenses.models.Week
 import com.github.trackexpenses.utils.ActivityResultUtils
@@ -126,6 +127,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         val json = mPrefs.getString("Settings", null) ?: return false
 
         settings = gson.fromJson(json, Settings::class.java)
+        if(settings.overviewSettings == null)
+            settings.overviewSettings = OverviewSettings()
+
         currency = settings.currency
         return true
     }
